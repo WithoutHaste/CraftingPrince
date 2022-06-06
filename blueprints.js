@@ -8,13 +8,18 @@ const RULE_TYPES = {
 const CALC_TYPES = {
 	NONE: "0",
 	CONSTANT: "1",
-	MULTIPLY: "2",
+	ADD: "2",
+	SUBTRACT: "3",
+	MULTIPLY: "4",
+	DIVIDE: "5",
 };
 const isId = /[a-wy-zA-WY-Z]/;
 const isEqual = /^([a-zA-Z])\.(height|width) = (.*)$/;
 const isGreaterOrEqual = /^([a-zA-Z])\.(height|width) >= (.*)$/;
 const isConstant = /^(\d+)$/;
+const isAddition = /^(.*) \+ (.*)$/;
 const isMultiplied = /^(\d*)([a-zA-Z])\.(height|width)$/;
+const isDivided = /^(.*) \/ (.*)$/;
 
 const blueprints = [
 	{
@@ -203,6 +208,14 @@ function parseRuleRightSide(raw) {
 		return rightSide;
 	}
 	
+	matches = raw.match(isAddition);
+	if(matches != null) {
+		rightSide.type = CALC_TYPES.ADD;
+		rightSide.left = parseRuleRightSide(matches[1]);
+		rightSide.right = parseRuleRightSide(matches[2]);
+		return rightSide;
+	}
+	
 	matches = raw.match(isMultiplied);
 	if(matches != null) {
 		rightSide.type = CALC_TYPES.MULTIPLY;
@@ -212,10 +225,18 @@ function parseRuleRightSide(raw) {
 		else {
 			rightSide.constant = parseInt(matches[1]);
 		}
-		rightSide.variable  = {
+		rightSide.variable = {
 			id: matches[2],
 			metric: matches[3],
 		};
+		return rightSide;
+	}
+	
+	matches = raw.match(isDivided);
+	if(matches != null) {
+		rightSide.type = CALC_TYPES.DIVIDE;
+		rightSide.left = parseRuleRightSide(matches[1]);
+		rightSide.right = parseRuleRightSide(matches[2]);
 		return rightSide;
 	}
 	

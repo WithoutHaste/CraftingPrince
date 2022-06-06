@@ -41,11 +41,11 @@ TODO how to encode the anchor material type and location?
 
 support versioning of blueprint collections, pricing/availability of parts, and the magical rules (bonuses/nerfs encoded into the items)
 
-blueprint collections are named with Nouns
+blueprint collections are named with Adjectives
 
-magical rules are named with verbs
+magical rules are named with Nouns
 
-and pricing is named with an object (in the sentence grammar sense)
+and pricing is named with Verbs
 
 so the combination of the three forms a sentence
 
