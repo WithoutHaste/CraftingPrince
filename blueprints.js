@@ -14,6 +14,7 @@ const CALC_TYPES = {
 	DIVIDE: "5",
 };
 const isId = /[a-wy-zA-WY-Z]/;
+const isInParentheses = /^\((.*)\)$/;
 const isEqual = /^([a-zA-Z])\.(height|width) = (.*)$/;
 const isGreaterOrEqual = /^([a-zA-Z])\.(height|width) >= (.*)$/;
 const isConstant = /^(\d+)$/;
@@ -191,12 +192,19 @@ function parseRule(raw) {
 //make this more complicated only as needed
 function parseRuleRightSide(raw) {
 	raw = raw.trim();
+	let matches = raw.match(isInParentheses);
+	if(matches != null) {
+		raw = matches[1].trim();
+	}
 	let rightSide = {
 		raw: raw,
 		type: CALC_TYPES.NONE,
 	};
 	
-	let matches = raw.match(isConstant);
+	//TODO matching on + inside parentheses before / outside them
+	//TODO for long term support, will need a general purpose parser - linear, handles any valid parentheses
+	
+	matches = raw.match(isConstant);
 	if(matches != null) {
 		rightSide.type = CALC_TYPES.CONSTANT;
 		if(matches[1] == null || matches[1] == '') {
