@@ -37,4 +37,18 @@ layouts only vaguely match the physical appearance of the item
 
 TODO how to encode the anchor material type and location?
 
+# versioning
+
+support versioning of blueprint collections, pricing/availability of parts, and the magical rules (bonuses/nerfs encoded into the items)
+
+blueprint collections are named with Nouns
+
+magical rules are named with verbs
+
+and pricing is named with an object (in the sentence grammar sense)
+
+so the combination of the three forms a sentence
+
+this implies all edits are major edits, which yeah they are when they part of a complex puzzle
+
 
