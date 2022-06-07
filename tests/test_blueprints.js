@@ -11,7 +11,6 @@ QUnit.test("rule parsing: EQUAL CONSTANT", function( assert ) {
 			metric: "width",
 		},
 		right: {
-			raw: "1",
 			type: CALC_TYPES.CONSTANT,
 			constant: 1,
 		},
@@ -32,7 +31,6 @@ QUnit.test("rule parsing: EQUAL CONSTANT", function( assert ) {
 			metric: "height",
 		},
 		right: {
-			raw: "2",
 			type: CALC_TYPES.CONSTANT,
 			constant: 2,
 		},
@@ -43,7 +41,7 @@ QUnit.test("rule parsing: EQUAL CONSTANT", function( assert ) {
 	assert.deepEqual(rule, expected, "rule deep equal");
 });
 
-QUnit.test("rule parsing: EQUAL METRIC OR MULTIPLY", function( assert ) {
+QUnit.test("rule parsing: EQUAL METRIC", function( assert ) {
 	let raw = "A.width = B.width";
 	let expected = {
 		raw: raw,
@@ -53,13 +51,9 @@ QUnit.test("rule parsing: EQUAL METRIC OR MULTIPLY", function( assert ) {
 			metric: "width",
 		},
 		right: {
-			raw: "B.width",
-			type: CALC_TYPES.MULTIPLY,
-			constant: 1,
-			variable: {
-				id: "B",
-				metric: "width",
-			},
+			type: CALC_TYPES.METRIC,
+			id: "B",
+			metric: "width",
 		},
 	};
 
@@ -69,7 +63,7 @@ QUnit.test("rule parsing: EQUAL METRIC OR MULTIPLY", function( assert ) {
 
 	//------------------------------------
 
-	raw = "A.width = 3B.height";
+	raw = "A.width = B.height";
 	expected = {
 		raw: raw,
 		type: RULE_TYPES.EQUAL,
@@ -78,13 +72,9 @@ QUnit.test("rule parsing: EQUAL METRIC OR MULTIPLY", function( assert ) {
 			metric: "width",
 		},
 		right: {
-			raw: "3B.height",
-			type: CALC_TYPES.MULTIPLY,
-			constant: 3,
-			variable: {
-				id: "B",
-				metric: "height",
-			},
+			type: CALC_TYPES.METRIC,
+			id: "B",
+			metric: "height",
 		},
 	};
 
@@ -93,6 +83,35 @@ QUnit.test("rule parsing: EQUAL METRIC OR MULTIPLY", function( assert ) {
 	assert.deepEqual(rule, expected, "rule deep equal");
 });
 
+QUnit.test("rule parsing: EQUAL MULTIPLY CONST METRIC", function( assert ) {
+	let raw = "A.width = 3 * B.height";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.EQUAL,
+		left: {
+			id: "A",
+			metric: "width",
+		},
+		right: {
+			type: CALC_TYPES.MULTIPLY,
+			left: {
+				type: CALC_TYPES.CONSTANT,
+				constant: 3,
+			},
+			right: {
+				type: CALC_TYPES.METRIC,
+				id: "B",
+				metric: "height",
+			},
+		},
+	};
+
+	let rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+//TODO the other multiply variations
+/*
 QUnit.test("rule parsing: GREATER OR EQUAL CONSTANT", function( assert ) {
 	let raw = "A.width >= 1";
 	let expected = {
@@ -431,3 +450,4 @@ QUnit.test("rule parsing: EQUAL SUBCALC DIVISION ADDITION", function( assert ) {
 
 
 
+*/

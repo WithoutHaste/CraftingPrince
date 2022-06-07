@@ -14,7 +14,8 @@ const CALC_TYPES = {
 	DIVIDE: "5",
 };
 const isId = /[a-wy-zA-WY-Z]/;
-const isInParentheses = /^\((.*)\)$/;
+const isIdMetric = /^([a-wy-zA-WY-Z])\.(width|height)/;
+//const isInParentheses = /^\((.*)\)$/;
 const isEqual = /^([a-zA-Z])\.(height|width) = (.*)$/;
 const isGreaterOrEqual = /^([a-zA-Z])\.(height|width) >= (.*)$/;
 const isConstant = /^(\d+)$/;
@@ -42,7 +43,7 @@ const blueprints = [
  dBd  
 
 
-A.height = 3B.height
+A.height = 3 * B.height
 B.height >= 3
 C.width = A.width
 A.width >= 1
@@ -192,10 +193,10 @@ function parseRule(raw) {
 //make this more complicated only as needed
 function parseRuleRightSide(raw) {
 	raw = raw.trim();
-	let matches = raw.match(isInParentheses);
-	if(matches != null) {
-		raw = matches[1].trim();
-	}
+	//let matches = raw.match(isInParentheses);
+	//if(matches != null) {
+	//	raw = matches[1].trim();
+	//}
 	let rightSide = {
 		raw: raw,
 		type: CALC_TYPES.NONE,
@@ -203,7 +204,106 @@ function parseRuleRightSide(raw) {
 	
 	//TODO matching on + inside parentheses before / outside them
 	//TODO for long term support, will need a general purpose parser - linear, handles any valid parentheses
+	let stack = [];
+	stack.push(rightSide);
+	for(let i = 0; i < raw.length; i++) {
+		if(raw[i] == ' ') {
+			continue;
+		}
+		if(raw[i] == '(') {
+			let nested = { type: CALC_TYPES.NONE };
+			let currentParent = stack[stack.length - 1];
+			if(currentParent.type == CALC_TYPES.NONE) {
+				currentParent.left = nested;
+			}
+			else {
+				currentParent.right = nested;
+			}
+			stack.push(nested);
+			continue;
+		}
+		if(raw[i] == ')') {
+			stack.pop();
+			continue;
+		}
+		if(raw[i] == '+') {
+			stack[stack.length - 1].type = CALC_TYPES.ADD;
+			continue;
+		}
+		if(raw[i] == '-') {
+			stack[stack.length - 1].type = CALC_TYPES.SUBTRACT;
+			continue;
+		}
+		if(raw[i] == '*') {
+			stack[stack.length - 1].type = CALC_TYPES.MULTIPLY;
+			continue;
+		}
+		if(raw[i] == '/') {
+			stack[stack.length - 1].type = CALC_TYPES.DIVIDE;
+			continue;
+		}
+		let digits = '';
+		while(i < raw.length && raw[i] >= '0' && raw[i] <= '9') {
+			digits += raw[i];
+			i++;
+		}
+		if(digits != '') {
+			let nested = { 
+				type: CALC_TYPES.CONSTANT,
+				constant: parseInt(digits),
+			};
+			let currentParent = stack[stack.length - 1];
+			if(currentParent.type == CALC_TYPES.NONE) {
+				currentParent.left = nested;
+			}
+			else {
+				currentParent.right = nested;
+			}
+			continue;
+		}
+		let substring = raw.substring(i, 8); //A.width* or A.height
+		let substringMatches = substring.match(isIdMetric);
+		if(substringMatches != null) {
+			let nested = { 
+				type: CALC_TYPES.METRIC,
+				id: substringMatches[1],
+				metric: substringMatches[2],
+			};
+			let currentParent = stack[stack.length - 1];
+			if(currentParent.type == CALC_TYPES.NONE) {
+				currentParent.left = nested;
+			}
+			else {
+				currentParent.right = nested;
+			}
+			i += 2 + substringMatches[2].length - 1;
+			continue;
+		}
+	}
 	
+	//unwind
+	console.log(rightSide);
+	for(let i = stack.length - 1; i >= 0; i--) {
+		let current = stack[i];
+		if("left" in current && !("right" in current)) {
+			console.log("attempt unwind");
+			if(i == 0) {
+				rightSide = current.left;
+				break;
+			}
+			let previous = stack[i - 1];
+			if(previous.left === current) {
+				previous.left = current.left;
+				continue;
+			}
+			if(previous.right === current) {
+				previous.right = current.left;
+				continue;
+			}
+		}
+	}
+	
+	/*
 	matches = raw.match(isConstant);
 	if(matches != null) {
 		rightSide.type = CALC_TYPES.CONSTANT;
@@ -247,6 +347,7 @@ function parseRuleRightSide(raw) {
 		rightSide.right = parseRuleRightSide(matches[2]);
 		return rightSide;
 	}
+	*/
 	
 	return rightSide;
 }
