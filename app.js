@@ -12,7 +12,9 @@ function run() {
 	appContainer = document.getElementById('app');
 	appContainer.innerHTML = "";
 	
+	fillOutBlueprints(blueprints);
 	selectedBlueprint = blueprints[0];
+	parseBlueprint(selectedBlueprint);
 
 	blueprintContainer = document.createElement('div');
 	displayBlueprint(blueprintContainer, selectedBlueprint);

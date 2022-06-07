@@ -1,5 +1,3 @@
-//utils.loadFile("blueprints/longsword.txt");
-
 const RULE_TYPES = {
 	NONE: "0",
 	EQUAL: "1",
@@ -23,71 +21,47 @@ const isAddition = /^(.*) \+ (.*)$/;
 const isMultiplied = /^(\d*)([a-zA-Z])\.(height|width)$/;
 const isDivided = /^(.*) \/ (.*)$/;
 
-const blueprints = [
-	{
-		name: "longsword",
-		raw: `
-    
-  A   
-  A   
-  A   
-  A   
-  A   
-  A   
-  A   
-  A   
-  A   
- xCx    
- dBd  
- dBd  
- dBd  
-
-
-A.height = 3 * B.height
-B.height >= 3
-C.width = A.width
-A.width >= 1
-A.width is odd
-d is empty
-d.height = B.height
-d.width = (A.width + 1) / 2
-    `,
-		isValidMetric: function(id, metric, value) {
-			for(let i = 0; i < this.rules.length; i++) {
-				const rule = this.rules[i];
-				if(rule.left.id != id)
-					continue;
-				if(rule.left.metric != metric)
-					continue;
-				if(rule.type == RULE_TYPES.EQUAL) {
-					if(rule.right.type == CALC_TYPES.CONSTANT) {
-						return value == rule.right.constant;
-					}
-				}
-				if(rule.type == RULE_TYPES.GREATER_OR_EQUAL) {
-					if(rule.right.type == CALC_TYPES.CONSTANT) {
-						return value >= rule.right.constant;
-					}
+function fillOutBlueprints() {
+	for(let i = 0; i < blueprints.length; i++) {
+		const blueprint = blueprints[i];
+		blueprint.isValidMetric = isValidMetric;
+		blueprint.propagateMetricChange = propagateMetricChange;
+	}
+	
+	function isValidMetric(id, metric, value) {
+		for(let i = 0; i < this.rules.length; i++) {
+			const rule = this.rules[i];
+			if(rule.left.id != id)
+				continue;
+			if(rule.left.metric != metric)
+				continue;
+			if(rule.type == RULE_TYPES.EQUAL) {
+				if(rule.right.type == CALC_TYPES.CONSTANT) {
+					return value == rule.right.constant;
 				}
 			}
-			return true;
-		},
-		propagateMetricChange: function(id, metric) {
-			for(let i = 0; i < this.rules.length; i++) {
-				const rule = this.rules[i];
-				if(rule.type != RULE_TYPES.EQUAL)
-					continue;
-				if(rule.right.type == CALC_TYPES.MULTIPLY) {
-					if(rule.right.variable.id == id && rule.right.variable.metric == metric) {
-						this.metrics[rule.left.id][rule.left.metric] = rule.right.constant * this.metrics[id][metric];
-					}
+			if(rule.type == RULE_TYPES.GREATER_OR_EQUAL) {
+				if(rule.right.type == CALC_TYPES.CONSTANT) {
+					return value >= rule.right.constant;
+				}
+			}
+		}
+		return true;
+	}
+
+	function propagateMetricChange(id, metric) {
+		for(let i = 0; i < this.rules.length; i++) {
+			const rule = this.rules[i];
+			if(rule.type != RULE_TYPES.EQUAL)
+				continue;
+			if(rule.right.type == CALC_TYPES.MULTIPLY) {
+				if(rule.right.variable.id == id && rule.right.variable.metric == metric) {
+					this.metrics[rule.left.id][rule.left.metric] = rule.right.constant * this.metrics[id][metric];
 				}
 			}
 		}
 	}
-];
-
-parseBlueprint(blueprints[0]);
+}
 
 function parseBlueprint(blueprint) {
 	let pattern = "";
