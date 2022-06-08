@@ -6,10 +6,11 @@ const RULE_TYPES = {
 const CALC_TYPES = {
 	NONE: "0",
 	CONSTANT: "1",
-	ADD: "2",
-	SUBTRACT: "3",
-	MULTIPLY: "4",
-	DIVIDE: "5",
+	METRIC: "2",
+	ADD: "3",
+	SUBTRACT: "4",
+	MULTIPLY: "5",
+	DIVIDE: "6",
 };
 const isId = /[a-wy-zA-WY-Z]/;
 const isIdMetric = /^([a-wy-zA-WY-Z])\.(width|height)/;
@@ -235,7 +236,7 @@ function parseRuleRightSide(raw) {
 			}
 			continue;
 		}
-		let substring = raw.substring(i, 8); //A.width* or A.height
+		let substring = raw.substring(i, i + 8); //A.width* or A.height
 		let substringMatches = substring.match(isIdMetric);
 		if(substringMatches != null) {
 			let nested = { 
@@ -256,11 +257,9 @@ function parseRuleRightSide(raw) {
 	}
 	
 	//unwind
-	console.log(rightSide);
 	for(let i = stack.length - 1; i >= 0; i--) {
 		let current = stack[i];
 		if("left" in current && !("right" in current)) {
-			console.log("attempt unwind");
 			if(i == 0) {
 				rightSide = current.left;
 				break;

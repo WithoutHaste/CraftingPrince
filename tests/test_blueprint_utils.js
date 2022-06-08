@@ -93,6 +93,7 @@ QUnit.test("rule parsing: EQUAL MULTIPLY CONST METRIC", function( assert ) {
 			metric: "width",
 		},
 		right: {
+			raw: "3 * B.height",
 			type: CALC_TYPES.MULTIPLY,
 			left: {
 				type: CALC_TYPES.CONSTANT,
