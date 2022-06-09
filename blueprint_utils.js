@@ -201,6 +201,19 @@ function parseRuleRightSide(raw) {
 			stack.pop();
 			continue;
 		}
+		if(raw[i] == '+' || raw[i] == '-' || raw[i] == '*' || raw[i] == '/') {
+			let previous = stack[stack.length - 1];
+			if(previous.type != CALC_TYPES.NONE && "left" in previous && "right" in previous) {
+				let replacement = {
+					type: previous.type,
+					left: previous.left,
+					right: previous.right,
+				};
+				previous.left = replacement;
+				previous.type = CALC_TYPES.NONE;
+				previous.right = null;
+			}
+		}
 		if(raw[i] == '+') {
 			stack[stack.length - 1].type = CALC_TYPES.ADD;
 			continue;

@@ -405,7 +405,6 @@ QUnit.test("rule parsing: EQUAL SUBCALC DIVISION ADDITION", function( assert ) {
 			metric: "width",
 		},
 		right: {
-			raw: "(B.height + 3) / 2",
 			type: CALC_TYPES.DIVIDE,
 			left: {
 				type: CALC_TYPES.ADD,

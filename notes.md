@@ -15,6 +15,12 @@ players of the craft-test system are in "creative mode"
 - they can select the exact materials they want
 - the total cost of those materials (based on rarity) will be shown with the item's stats
 
+rule ideas
+- if the number of tiles in the item is odd, all fire-effects are nullified
+- if such-and-such pattern appears in the item, it bears curse:sleep/fear/whatever (affecting the bearer)
+- if the item includes a tile of each of the 12 material types, it gains <effect>
+- if the item is made up entirely of 1 material type, it gains <effect>
+
 # blueprints folder
 
 all the "blueprints" for items that you can craft
