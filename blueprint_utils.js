@@ -177,8 +177,6 @@ function parseRuleRightSide(raw) {
 		type: CALC_TYPES.NONE,
 	};
 	
-	//TODO matching on + inside parentheses before / outside them
-	//TODO for long term support, will need a general purpose parser - linear, handles any valid parentheses
 	let stack = [];
 	stack.push(rightSide);
 	for(let i = 0; i < raw.length; i++) {
@@ -288,52 +286,6 @@ function parseRuleRightSide(raw) {
 			}
 		}
 	}
-	
-	/*
-	matches = raw.match(isConstant);
-	if(matches != null) {
-		rightSide.type = CALC_TYPES.CONSTANT;
-		if(matches[1] == null || matches[1] == '') {
-			rightSide.constant = 1;
-		}
-		else {
-			rightSide.constant = parseInt(matches[1]);
-		}
-		return rightSide;
-	}
-	
-	matches = raw.match(isAddition);
-	if(matches != null) {
-		rightSide.type = CALC_TYPES.ADD;
-		rightSide.left = parseRuleRightSide(matches[1]);
-		rightSide.right = parseRuleRightSide(matches[2]);
-		return rightSide;
-	}
-	
-	matches = raw.match(isMultiplied);
-	if(matches != null) {
-		rightSide.type = CALC_TYPES.MULTIPLY;
-		if(matches[1] == null || matches[1] == '') {
-			rightSide.constant = 1;
-		}
-		else {
-			rightSide.constant = parseInt(matches[1]);
-		}
-		rightSide.variable = {
-			id: matches[2],
-			metric: matches[3],
-		};
-		return rightSide;
-	}
-	
-	matches = raw.match(isDivided);
-	if(matches != null) {
-		rightSide.type = CALC_TYPES.DIVIDE;
-		rightSide.left = parseRuleRightSide(matches[1]);
-		rightSide.right = parseRuleRightSide(matches[2]);
-		return rightSide;
-	}
-	*/
 	
 	return rightSide;
 }
