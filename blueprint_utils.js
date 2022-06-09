@@ -272,6 +272,7 @@ function parseRuleRightSide(raw) {
 		let current = stack[i];
 		if("left" in current && !("right" in current)) {
 			if(i == 0) {
+				current.left.raw = rightSide.raw;
 				rightSide = current.left;
 				break;
 			}

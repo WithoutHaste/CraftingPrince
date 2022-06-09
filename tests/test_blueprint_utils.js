@@ -11,6 +11,7 @@ QUnit.test("rule parsing: EQUAL CONSTANT", function( assert ) {
 			metric: "width",
 		},
 		right: {
+			raw: "1",
 			type: CALC_TYPES.CONSTANT,
 			constant: 1,
 		},
@@ -31,6 +32,7 @@ QUnit.test("rule parsing: EQUAL CONSTANT", function( assert ) {
 			metric: "height",
 		},
 		right: {
+			raw: "2",
 			type: CALC_TYPES.CONSTANT,
 			constant: 2,
 		},
@@ -51,6 +53,7 @@ QUnit.test("rule parsing: EQUAL METRIC", function( assert ) {
 			metric: "width",
 		},
 		right: {
+			raw: "B.width",
 			type: CALC_TYPES.METRIC,
 			id: "B",
 			metric: "width",
@@ -72,6 +75,7 @@ QUnit.test("rule parsing: EQUAL METRIC", function( assert ) {
 			metric: "width",
 		},
 		right: {
+			raw: "B.height",
 			type: CALC_TYPES.METRIC,
 			id: "B",
 			metric: "height",
@@ -181,6 +185,7 @@ QUnit.test("rule parsing: GREATER OR EQUAL CONSTANT", function( assert ) {
 			metric: "width",
 		},
 		right: {
+			raw: "1",
 			type: CALC_TYPES.CONSTANT,
 			constant: 1,
 		},
@@ -395,7 +400,7 @@ QUnit.test("rule parsing: EQUAL DIVISION METRIC METRIC", function( assert ) {
 	assert.deepEqual(rule, expected, "rule deep equal");
 });
 
-QUnit.test("rule parsing: EQUAL SUBCALC DIVISION ADDITION", function( assert ) {
+QUnit.test("rule parsing: EQUAL SUBCALC (A + B) / C", function( assert ) {
 	let raw = "A.width = (B.height + 3) / 2";
 	let expected = {
 		raw: raw,
@@ -405,6 +410,7 @@ QUnit.test("rule parsing: EQUAL SUBCALC DIVISION ADDITION", function( assert ) {
 			metric: "width",
 		},
 		right: {
+			raw: "(B.height + 3) / 2",
 			type: CALC_TYPES.DIVIDE,
 			left: {
 				type: CALC_TYPES.ADD,
@@ -430,4 +436,129 @@ QUnit.test("rule parsing: EQUAL SUBCALC DIVISION ADDITION", function( assert ) {
 	assert.deepEqual(rule, expected, "rule deep equal");
 });
 
+QUnit.test("rule parsing: EQUAL SUBCALC A + (B / C)", function( assert ) {
+	let raw = "A.width = B.height + (3 / 2)";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.EQUAL,
+		left: {
+			id: "A",
+			metric: "width",
+		},
+		right: {
+			raw: "B.height + (3 / 2)",
+			type: CALC_TYPES.ADD,
+			left: {
+				type: CALC_TYPES.METRIC,
+				id: "B",
+				metric: "height",
+			},
+			right: {
+				type: CALC_TYPES.DIVIDE,
+				left: {
+					type: CALC_TYPES.CONSTANT,
+					constant: 3,
+				},
+				right: {
+					type: CALC_TYPES.CONSTANT,
+					constant: 2,
+				},
+			},
+		},
+	};
+	
+	let rule = parseRule(raw);
+	
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
+QUnit.test("rule parsing: EQUAL SUBCALC (A * B) - (C + D)", function( assert ) {
+	let raw = "A.width = (B.height * c.width) - (3 + D.height)";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.EQUAL,
+		left: {
+			id: "A",
+			metric: "width",
+		},
+		right: {
+			raw: "(B.height * c.width) - (3 + D.height)",
+			type: CALC_TYPES.SUBTRACT,
+			left: {
+				type: CALC_TYPES.MULTIPLY,
+				left: {
+					type: CALC_TYPES.METRIC,
+					id: "B",
+					metric: "height",
+				},
+				right: {
+					type: CALC_TYPES.METRIC,
+					id: "c",
+					metric: "width",
+				},
+			},
+			right: {
+				type: CALC_TYPES.ADD,
+				left: {
+					type: CALC_TYPES.CONSTANT,
+					constant: 3,
+				},
+				right: {
+					type: CALC_TYPES.METRIC,
+					id: "D",
+					metric: "height",
+				},
+			},
+		},
+	};
+	
+	let rule = parseRule(raw);
+	
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
+QUnit.test("rule parsing: EQUAL SUBCALC ((A * B) - C) + D", function( assert ) {
+	let raw = "A.width = ((B.height * c.width) - 3) + D.height";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.EQUAL,
+		left: {
+			id: "A",
+			metric: "width",
+		},
+		right: {
+			raw: "((B.height * c.width) - 3) + D.height",
+			type: CALC_TYPES.ADD,
+			left: {
+				type: CALC_TYPES.SUBTRACT,
+				left: {
+					type: CALC_TYPES.MULTIPLY,
+					left: {
+						type: CALC_TYPES.METRIC,
+						id: "B",
+						metric: "height",
+					},
+					right: {
+						type: CALC_TYPES.METRIC,
+						id: "c",
+						metric: "width",
+					},
+				},
+				right: {
+					type: CALC_TYPES.CONSTANT,
+					constant: 3,
+				},
+			},
+			right: {
+				type: CALC_TYPES.METRIC,
+				id: "D",
+				metric: "height",
+			},
+		},
+	};
+	
+	let rule = parseRule(raw);
+	
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
 
