@@ -32,7 +32,7 @@ d.width = (A.width + 1) / 2
 	},
 	{
 		name: "corseque",
-		raw = `
+		raw: `
     
     
     
