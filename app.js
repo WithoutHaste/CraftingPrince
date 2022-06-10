@@ -108,13 +108,18 @@ function updateBlueprintDisplay() {
 //returns container element
 function generateDefaultBlueprintDisplay(blueprint) {
 	const table = document.createElement('table');
+	table.style.borderCollapse = "collapse";
 	const lines = blueprint.pattern.split('\n');
 	for(let r = 0; r < lines.length; r++) {
 		const row = document.createElement('tr');
 		for(let c = 0; c < lines[r].length; c++) {
+			const id = lines[r][c];
 			const cell = document.createElement('td');
-			cell.innerHTML = lines[r][c];
-			cell.dataset.id = lines[r][c];
+			cell.innerHTML = id;
+			cell.dataset.id = id;
+			if(blueprint.emptyIds.includes(id)) {
+				cell.style.backgroundColor = '#ccc';
+			}
 			row.appendChild(cell);
 		}
 		table.appendChild(row);

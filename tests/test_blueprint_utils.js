@@ -1,6 +1,32 @@
 
 // TEST RULE PARSING ///////////////////////////////////////
 
+QUnit.test("rule parsing: IS EMPTY", function( assert ) {
+	let raw = "A is empty";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.EMPTY_TILE,
+		id: "A",
+	};
+
+	let rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+
+	//------------------------------------
+
+	raw = "a is empty";
+	expected = {
+		raw: raw,
+		type: RULE_TYPES.EMPTY_TILE,
+		id: "a",
+	};
+
+	rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
 QUnit.test("rule parsing: EQUAL CONSTANT", function( assert ) {
 	let raw = "A.width = 1";
 	let expected = {

@@ -2,6 +2,7 @@ const RULE_TYPES = {
 	NONE: "0",
 	EQUAL: "1",
 	GREATER_OR_EQUAL: "2",
+	EMPTY_TILE: "3",
 };
 const CALC_TYPES = {
 	NONE: "0",
@@ -14,9 +15,9 @@ const CALC_TYPES = {
 };
 const isId = /[a-wy-zA-WY-Z]/;
 const isIdMetric = /^([a-wy-zA-WY-Z])\.(width|height)/;
-//const isInParentheses = /^\((.*)\)$/;
 const isEqual = /^([a-zA-Z])\.(height|width) = (.*)$/;
 const isGreaterOrEqual = /^([a-zA-Z])\.(height|width) >= (.*)$/;
+const isEmptyTile = /^([a-zA-Z]) is empty$/;
 const isConstant = /^(\d+)$/;
 const isAddition = /^(.*) \+ (.*)$/;
 const isMultiplied = /^(\d*)([a-zA-Z])\.(height|width)$/;
@@ -98,6 +99,7 @@ function parseBlueprint(blueprint) {
 	}
 	blueprint.pattern = pattern
 	initializeMetricValues(blueprint);
+	blueprint.emptyIds = [' '];
 	
 	let rules = [];
 	let startedRules = false;
@@ -113,7 +115,11 @@ function parseBlueprint(blueprint) {
 		}
 		//within the rules section
 		startedRules = true;
-		rules.push(parseRule(lines[i]));
+		let rule = parseRule(lines[i]);
+		rules.push(rule);
+		if(rule.type == RULE_TYPES.EMPTY_TILE) {
+			blueprint.emptyIds.push(rule.id);
+		}
 	}
 	blueprint.rules = rules
 }
@@ -171,6 +177,13 @@ function parseRule(raw) {
 			metric: matches[2],
 		};
 		rule.right = parseRuleRightSide(matches[3]);
+		return rule;
+	}
+
+	matches = raw.match(isEmptyTile);
+	if(matches != null) {
+		rule.type = RULE_TYPES.EMPTY_TILE;
+		rule.id = matches[1];
 		return rule;
 	}
 
