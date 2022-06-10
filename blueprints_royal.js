@@ -14,15 +14,14 @@ const blueprints = [
   A   
   A   
   A   
- xCx    
- dBd  
- dBd  
- dBd  
+ xAx    
+ dB  
+ dB  
+ dB  
 
 
-A.height = 3 * B.height
+A.height = (3 * B.height) + 1
 B.height >= 3
-C.width = A.width
 A.width >= 1
 A.width is odd
 d is empty
