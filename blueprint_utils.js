@@ -27,6 +27,7 @@ function fillOutBlueprints() {
 		const blueprint = blueprints[i];
 		blueprint.isValidMetric = isValidMetric;
 		blueprint.propagateMetricChange = propagateMetricChange;
+		blueprint.runRuleRightSideCalculation = runRuleRightSideCalculation;
 	}
 	
 	function isValidMetric(id, metric, value) {
@@ -55,11 +56,22 @@ function fillOutBlueprints() {
 			const rule = this.rules[i];
 			if(rule.type != RULE_TYPES.EQUAL)
 				continue;
-			if(rule.right.type == CALC_TYPES.MULTIPLY) {
-				if(rule.right.variable.id == id && rule.right.variable.metric == metric) {
-					this.metrics[rule.left.id][rule.left.metric] = rule.right.constant * this.metrics[id][metric];
-				}
-			}
+			this.metrics[rule.left.id][rule.left.metric] = this.runRuleRightSideCalculation(rule.right);
+		}
+	}
+	
+	function runRuleRightSideCalculation(rightSide) {
+		switch(rightSide.type) {
+			case CALC_TYPES.CONSTANT: return rightSide.constant;
+			case CALC_TYPES.METRIC: return this.metrics[rightSide.id][rightSide.metric];
+		}
+		const left = this.runRuleRightSideCalculation(rightSide.left);
+		const right = this.runRuleRightSideCalculation(rightSide.right);
+		switch(rightSide.type) {
+			case CALC_TYPES.ADD: return left + right;
+			case CALC_TYPES.SUBTRACT: return left - right;
+			case CALC_TYPES.MUTIPLY: return left * right;
+			case CALC_TYPES.DIVIDE: return Math.floor(left / right);
 		}
 	}
 }
