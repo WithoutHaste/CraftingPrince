@@ -160,28 +160,56 @@ function calcSegmentSize(table, id, upperLeft) {
 function displayRules(ruleContainer, blueprint) {
 	ruleContainer.innerHTML = "";
 	ruleContainer.style.display = "inline-block";
+	let editableMetrics = [];
 	for(let i = 0; i < blueprint.rules.length; i++) {
+		const rule = blueprint.rules[i];
 		const div = document.createElement('div');
-		displayRule(div, blueprint.rules[i], blueprint.metrics);
+		div.innerHTML = rule.raw;
+		ruleContainer.appendChild(div);
+		
+		addEditableMetrics(rule.right);
+	}
+
+	for(let i = 0; i < editableMetrics.length; i++) {
+		const idMetric = editableMetrics[i];
+		let div = document.createElement('div');
+		let span = document.createElement('span');
+		span.innerHTML = idMetric.id + "." + idMetric.metric + ":";
+		div.appendChild(span);
+		let input = document.createElement('input');
+		input.dataset.id = idMetric.id;
+		input.dataset.metric = idMetric.metric;
+		input.value = blueprint.metrics[idMetric.id][idMetric.metric];
+		input.addEventListener('input', metricOnChange);
+		input.addEventListener('blur', metricOnBlur);
+		div.appendChild(input);
 		ruleContainer.appendChild(div);
 	}
-}
-
-function displayRule(container, rule, metrics) {
-	container.innerHTML = rule.raw;
-	if("right" in rule) {
-		if("variable" in rule.right) {
-			let span = document.createElement('span');
-			span.innerHTML = " | " + rule.right.variable.id + "." + rule.right.variable.metric + ":";
-			container.appendChild(span);
-			let input = document.createElement('input');
-			input.dataset.id = rule.right.variable.id;
-			input.dataset.metric = rule.right.variable.metric;
-			input.value = metrics[rule.right.variable.id][rule.right.variable.metric];
-			input.addEventListener('input', metricOnChange);
-			input.addEventListener('blur', metricOnBlur);
-			container.appendChild(input);
+	
+	function addEditableMetrics(rule) {
+		if(rule == undefined)
+			return;
+		if(rule.type == CALC_TYPES.METRIC) {
+			if(!duplicateEditableMetric(rule.id, rule.metric)) {
+				editableMetrics.push({ id: rule.id, metric: rule.metric });
+			}
 		}
+		if("left" in rule) {
+			addEditableMetrics(rule.left);
+		}
+		if("right" in rule) {
+			addEditableMetrics(rule.right);
+		}
+	}
+	
+	function duplicateEditableMetric(id, metric) {
+		for(let i = 0; i < editableMetrics.length; i++) {
+			const idMetric = editableMetrics[i];
+			if(idMetric.id == id && idMetric.metric == metric) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
