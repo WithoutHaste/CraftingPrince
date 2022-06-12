@@ -17,10 +17,13 @@ function run() {
 	parseBlueprint(selectedBlueprint);
 
 	blueprintContainer = document.createElement('div');
+	blueprintContainer.style.fontFamily = 'Courier';
 	displayBlueprint(blueprintContainer, selectedBlueprint);
 	appContainer.appendChild(blueprintContainer);
 	
 	ruleContainer = document.createElement('div');
+	ruleContainer.style.fontFamily = 'Courier';
+	ruleContainer.style.marginLeft = '2em';
 	displayRules(ruleContainer, selectedBlueprint);
 	appContainer.appendChild(ruleContainer);
 }
