@@ -66,10 +66,7 @@ function propagateMetricChange(id, metric) {
 			continue;
 		if(!ruleIsBasedOnIdMetric(rule.right, id, metric))
 			continue;
-		console.log(rule);
-		console.log(this.metrics[id][metric]);
 		this.metrics[rule.left.id][rule.left.metric] = this.runRuleRightSideCalculation(rule.right);
-		console.log(this.metrics[rule.left.id][rule.left.metric]);
 	}
 }
 
