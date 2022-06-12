@@ -42,6 +42,48 @@ QUnit.test("is valid metric: NO APPLICABLE RULES", function( assert ) {
 	assert.true(result, "");
 });
 
+QUnit.test("is valid metric: IS ODD", function( assert ) {
+	let id = 'A';
+	let metric = 'width';
+	let blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} is odd`),
+		],
+		isValidMetric: isValidMetric,
+	};
+
+	let result = blueprint.isValidMetric(id, metric, 3);
+
+	assert.true(result, "true");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 4);
+
+	assert.false(result, "false");
+});
+
+QUnit.test("is valid metric: IS EVEN", function( assert ) {
+	let id = 'A';
+	let metric = 'width';
+	let blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} is even`),
+		],
+		isValidMetric: isValidMetric,
+	};
+
+	let result = blueprint.isValidMetric(id, metric, 4);
+
+	assert.true(result, "true");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 3);
+
+	assert.false(result, "false");
+});
+
 QUnit.test("is valid metric: EQUAL CONSTANT", function( assert ) {
 	let id = 'A';
 	let metric = 'width';
@@ -111,4 +153,26 @@ QUnit.test("is valid metric: GREATER OR EQUAL CONSTANT", function( assert ) {
 	result = blueprint.isValidMetric(id, metric, value);
 
 	assert.false(result, "false less than");
+});
+
+QUnit.test("is valid metric: CHECKS ALL RULES", function( assert ) {
+	let id = 'A';
+	let metric = 'width';
+	let blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} >= 0`),
+			parseRule(`${id}.${metric} is even`),
+		],
+		isValidMetric: isValidMetric,
+	};
+
+	let result = blueprint.isValidMetric(id, metric, 4);
+
+	assert.true(result, "true");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 3);
+
+	assert.false(result, "false");
 });

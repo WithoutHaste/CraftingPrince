@@ -24,6 +24,34 @@ QUnit.test("rule parsing: IS EMPTY", function( assert ) {
 	assert.deepEqual(rule, expected, "rule deep equal");
 });
 
+QUnit.test("rule parsing: IS ODD", function( assert ) {
+	let raw = "A.width is odd";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.IS_ODD,
+		id: "A",
+		metric: "width",
+	};
+
+	let rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
+QUnit.test("rule parsing: IS EVEN", function( assert ) {
+	let raw = "A.height is even";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.IS_EVEN,
+		id: "A",
+		metric: "height",
+	};
+
+	let rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
 QUnit.test("rule parsing: EQUAL CONSTANT", function( assert ) {
 	let raw = "A.width = 1";
 	let expected = {

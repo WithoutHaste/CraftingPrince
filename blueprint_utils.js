@@ -3,6 +3,8 @@ const RULE_TYPES = {
 	EQUAL: "1",
 	GREATER_OR_EQUAL: "2",
 	EMPTY_TILE: "3",
+	IS_ODD: "4",
+	IS_EVEN: "5",
 };
 const CALC_TYPES = {
 	NONE: "0",
@@ -18,6 +20,8 @@ const isIdMetric = /^([a-wy-zA-WY-Z])\.(width|height)/;
 const isEqual = /^([a-zA-Z])\.(height|width) = (.*)$/;
 const isGreaterOrEqual = /^([a-zA-Z])\.(height|width) >= (.*)$/;
 const isEmptyTile = /^([a-zA-Z]) is empty$/;
+const isOdd = /^([a-zA-Z])\.(height|width) is odd$/;
+const isEven = /^([a-zA-Z])\.(height|width) is even$/;
 const isConstant = /^(\d+)$/;
 const isAddition = /^(.*) \+ (.*)$/;
 const isMultiplied = /^(\d*)([a-zA-Z])\.(height|width)$/;
@@ -39,6 +43,23 @@ function isValidMetric(id, metric, value) {
 		return false;
 	for(let i = 0; i < this.rules.length; i++) {
 		const rule = this.rules[i];
+		if(rule.type == RULE_TYPES.IS_ODD) {
+			if(rule.id != id)
+				continue;
+			if(rule.metric != metric)
+				continue;
+			if(value % 2 != 1)
+				return false;
+		}
+		if(rule.type == RULE_TYPES.IS_EVEN) {
+			if(rule.id != id)
+				continue;
+			if(rule.metric != metric)
+				continue;
+			if(value % 2 != 0)
+				return false;
+		}
+
 		if(!("left" in rule))
 			continue;
 		if(rule.left.id != id)
@@ -47,12 +68,14 @@ function isValidMetric(id, metric, value) {
 			continue;
 		if(rule.type == RULE_TYPES.EQUAL) {
 			if(rule.right.type == CALC_TYPES.CONSTANT) {
-				return value == rule.right.constant;
+				if(value != rule.right.constant)
+					return false;
 			}
 		}
 		if(rule.type == RULE_TYPES.GREATER_OR_EQUAL) {
 			if(rule.right.type == CALC_TYPES.CONSTANT) {
-				return value >= rule.right.constant;
+				if(!(value >= rule.right.constant))
+					return false;
 			}
 		}
 	}
@@ -212,6 +235,22 @@ function parseRule(raw) {
 	if(matches != null) {
 		rule.type = RULE_TYPES.EMPTY_TILE;
 		rule.id = matches[1];
+		return rule;
+	}
+
+	matches = raw.match(isOdd);
+	if(matches != null) {
+		rule.type = RULE_TYPES.IS_ODD;
+		rule.id = matches[1];
+		rule.metric = matches[2];
+		return rule;
+	}
+
+	matches = raw.match(isEven);
+	if(matches != null) {
+		rule.type = RULE_TYPES.IS_EVEN;
+		rule.id = matches[1];
+		rule.metric = matches[2];
 		return rule;
 	}
 
