@@ -29,53 +29,84 @@ function fillOutBlueprints() {
 		blueprint.isValidMetric = isValidMetric;
 		blueprint.propagateMetricChange = propagateMetricChange;
 		blueprint.runRuleRightSideCalculation = runRuleRightSideCalculation;
-	}
-	
-	function isValidMetric(id, metric, value) {
-		for(let i = 0; i < this.rules.length; i++) {
-			const rule = this.rules[i];
-			if(rule.left.id != id)
-				continue;
-			if(rule.left.metric != metric)
-				continue;
-			if(rule.type == RULE_TYPES.EQUAL) {
-				if(rule.right.type == CALC_TYPES.CONSTANT) {
-					return value == rule.right.constant;
-				}
-			}
-			if(rule.type == RULE_TYPES.GREATER_OR_EQUAL) {
-				if(rule.right.type == CALC_TYPES.CONSTANT) {
-					return value >= rule.right.constant;
-				}
-			}
-		}
-		return true;
-	}
+	}	
+}
 
-	function propagateMetricChange(id, metric) {
-		for(let i = 0; i < this.rules.length; i++) {
-			const rule = this.rules[i];
-			if(rule.type != RULE_TYPES.EQUAL)
-				continue;
-			this.metrics[rule.left.id][rule.left.metric] = this.runRuleRightSideCalculation(rule.right);
+/////////////////////////////////////////
+//EXPECTS TO BE INSIDE A BLUEPRINT OBJECT
+function isValidMetric(id, metric, value) {
+	if(value < 0)
+		return false;
+	for(let i = 0; i < this.rules.length; i++) {
+		const rule = this.rules[i];
+		if(!("left" in rule))
+			continue;
+		if(rule.left.id != id)
+			continue;
+		if(rule.left.metric != metric)
+			continue;
+		if(rule.type == RULE_TYPES.EQUAL) {
+			if(rule.right.type == CALC_TYPES.CONSTANT) {
+				return value == rule.right.constant;
+			}
+		}
+		if(rule.type == RULE_TYPES.GREATER_OR_EQUAL) {
+			if(rule.right.type == CALC_TYPES.CONSTANT) {
+				return value >= rule.right.constant;
+			}
 		}
 	}
-	
-	function runRuleRightSideCalculation(rightSide) {
-		switch(rightSide.type) {
-			case CALC_TYPES.CONSTANT: return rightSide.constant;
-			case CALC_TYPES.METRIC: return this.metrics[rightSide.id][rightSide.metric];
-		}
-		const left = this.runRuleRightSideCalculation(rightSide.left);
-		const right = this.runRuleRightSideCalculation(rightSide.right);
-		switch(rightSide.type) {
-			case CALC_TYPES.ADD: return left + right;
-			case CALC_TYPES.SUBTRACT: return left - right;
-			case CALC_TYPES.MUTIPLY: return left * right;
-			case CALC_TYPES.DIVIDE: return Math.floor(left / right);
-		}
+	return true;
+}
+
+function propagateMetricChange(id, metric) {
+	for(let i = 0; i < this.rules.length; i++) {
+		const rule = this.rules[i];
+		if(rule.type != RULE_TYPES.EQUAL)
+			continue;
+		if(!ruleIsBasedOnIdMetric(rule.right, id, metric))
+			continue;
+		console.log(rule);
+		console.log(this.metrics[id][metric]);
+		this.metrics[rule.left.id][rule.left.metric] = this.runRuleRightSideCalculation(rule.right);
+		console.log(this.metrics[rule.left.id][rule.left.metric]);
 	}
 }
+
+//returns true if id.metric is involved in this calculation
+function ruleIsBasedOnIdMetric(rightSide, id, metric) {
+	if(rightSide.type == CALC_TYPES.METRIC) {
+		return (rightSide.id == id && rightSide.metric == metric);
+	}
+	if("left" in rightSide) {
+		let result = ruleIsBasedOnIdMetric(rightSide.left, id, metric);
+		if(result == true)
+			return result;
+	}
+	if("right" in rightSide) {
+		let result = ruleIsBasedOnIdMetric(rightSide.right, id, metric);
+		if(result == true)
+			return result;
+	}
+	return false;
+}
+
+function runRuleRightSideCalculation(rightSide) {
+	switch(rightSide.type) {
+		case CALC_TYPES.CONSTANT: return rightSide.constant;
+		case CALC_TYPES.METRIC: return this.metrics[rightSide.id][rightSide.metric];
+	}
+	const left = this.runRuleRightSideCalculation(rightSide.left);
+	const right = this.runRuleRightSideCalculation(rightSide.right);
+	switch(rightSide.type) {
+		case CALC_TYPES.ADD: return left + right;
+		case CALC_TYPES.SUBTRACT: return left - right;
+		case CALC_TYPES.MUTIPLY: return left * right;
+		case CALC_TYPES.DIVIDE: return Math.floor(left / right);
+	}
+}
+//END INSIDE BLUEPRINT OBJECT
+/////////////////////////////
 
 function parseBlueprint(blueprint) {
 	let pattern = "";

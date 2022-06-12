@@ -1,6 +1,3 @@
-
-// TEST RULE PARSING ///////////////////////////////////////
-
 QUnit.test("rule parsing: IS EMPTY", function( assert ) {
 	let raw = "A is empty";
 	let expected = {

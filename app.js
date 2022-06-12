@@ -89,7 +89,6 @@ function updateBlueprintDisplay() {
 		}
 		while(currentSize.height < targetHeight) {
 			//TODO cloning the whole row is not right, there could be unrelated cells there - I really want to push-down the existing cells in their "column"
-			//and for that, I'll need connection points so I know what to move with what
 			const modelRow = table.children[upperLeft.row];
 			const newRow = modelRow.cloneNode(deep=true);
 			table.insertBefore(newRow, modelRow);
