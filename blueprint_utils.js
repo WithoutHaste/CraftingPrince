@@ -101,7 +101,7 @@ function runRuleRightSideCalculation(rightSide) {
 	switch(rightSide.type) {
 		case CALC_TYPES.ADD: return left + right;
 		case CALC_TYPES.SUBTRACT: return left - right;
-		case CALC_TYPES.MUTIPLY: return left * right;
+		case CALC_TYPES.MULTIPLY: return left * right;
 		case CALC_TYPES.DIVIDE: return Math.floor(left / right);
 	}
 }
