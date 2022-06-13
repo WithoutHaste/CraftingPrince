@@ -15,6 +15,7 @@ const CALC_TYPES = {
 	MULTIPLY: "5",
 	DIVIDE: "6",
 };
+const isWhitespace = /^\s*$/;
 const isId = /[a-wy-zA-WY-Z]/;
 const isIdMetric = /^([a-wy-zA-WY-Z])\.(width|height)/;
 const isEqual = /^([a-zA-Z])\.(height|width) = (.*)$/;
@@ -132,7 +133,6 @@ function parseBlueprint(blueprint) {
 	let pattern = "";
 	let lines = blueprint.raw.split("\n");
 	let startedPattern = false;
-	const isWhitespace = new RegExp("^\w*$");
 	let i = 0;
 	for(i=0; i<lines.length; i++)
 	{
