@@ -55,10 +55,10 @@ d.width = (A.width + 1) / 2
    C  
    C  
    C  
-   B  
-   B  
-   B  
-   B  
+   x  
+   x  
+   x  
+   x  
     
 A.height + C.height = 20
 C.height is multiple of 4
@@ -71,6 +71,7 @@ e.width is prime
 
 notes on intentions
 - add as many "pointy" sections as you want, but the whole polearm cannot become too long
+- when you edit A.height or C.height, the other auto-updates such that rule #1 is still true
 - the pointy bits hanging off of "A" get duplicated when "A" does
 		`
 	},
