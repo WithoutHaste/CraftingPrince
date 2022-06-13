@@ -1,5 +1,7 @@
 # notes
 
+note: blueprints should default to a valid layout
+
 crafting system inspired by "The King's Avatar" manga
 - how could a crafting system support the sort of creativity hinted at in the manga?
 

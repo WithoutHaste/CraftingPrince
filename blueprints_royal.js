@@ -46,6 +46,18 @@ d.width = (A.width + 1) / 2
    C  
    C  
    C  
+   C  
+   C  
+   C  
+   C  
+   C  
+   C  
+   C  
+   C  
+   C  
+   C  
+   C  
+   C  
    B  
    B  
    B  
