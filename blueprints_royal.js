@@ -33,9 +33,6 @@ d.width = (A.width + 1) / 2
 		name: "corseque",
 		raw: `
     
-    
-    
-    
    x   
    x
   dAd 
@@ -64,15 +61,15 @@ d.width = (A.width + 1) / 2
    B  
     
 A.height + C.height = 20
-C.height = 4x
-A.height = 4x (a multiple of 4)
+C.height is multiple of 4
+A.height is multiple of 4
 d travels with A
 e travels with A
-d.width < e.width and > 0
+d.width < e.width
+d.width >= 1
 e.width is prime
 
 notes on intentions
-- the blueprint does not display the actual length of the polearm, that is encoded in the sizing rules
 - add as many "pointy" sections as you want, but the whole polearm cannot become too long
 - the pointy bits hanging off of "A" get duplicated when "A" does
 		`
