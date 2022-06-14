@@ -133,10 +133,10 @@ function updateBlueprintDisplay() {
 			currentSize.width--;
 		}
 		while(currentSize.height < targetHeight) {
-			//TODO cloning the whole row is not right, there could be unrelated cells there - I really want to push-down the existing cells in their "column"
-			const modelRow = table.children[upperLeft.row];
-			const newRow = modelRow.cloneNode(deep=true);
-			table.insertBefore(newRow, modelRow);
+			for(let c = upperLeft.col; c < upperLeft.col + currentSize.width; c++) {
+				const modelCell = table.children[upperLeft.row].children[c];
+				shiftCellsDown(upperLeft.row, c, modelCell.cloneNode(deep=true));
+			}
 			currentSize.height++;
 		}
 		while(currentSize.height > targetHeight) {
@@ -148,6 +148,33 @@ function updateBlueprintDisplay() {
 	
 	blueprintContainer.innerHTML = "";
 	blueprintContainer.appendChild(table);
+	
+	//starting with r-th row, replace the c-th cell with `insertCell`, shifting the current cell down to the same position in the next row
+	function shiftCellsDown(r, c, insertCell) {
+		if(table.children.length <= r) {
+			//last one
+			const row = document.createElement('tr');
+			for(let i = 0; i < c; i++) {
+				row.appendChild(document.createElement('td'));
+			}
+			row.appendChild(insertCell);
+			table.appendChild(row);
+			return;
+		}
+		const row = table.children[r];
+		if(row.children.length <= c) {
+			//last one
+			for(let i = row.children.length; i < c; i++) {
+				row.appendChild(document.createElement('td'));
+			}
+			row.appendChild(insertCell);
+			return;
+		}
+		const moveCell = row.children[c];
+		row.insertBefore(insertCell, moveCell);
+		row.removeChild(moveCell);
+		shiftCellsDown(r + 1, c, moveCell);
+	}
 }
 
 //returns container element
@@ -197,7 +224,9 @@ function calcSegmentSize(table, id, upperLeft) {
 		width: 1,
 		height: 1,
 	};
-	while(upperLeft.row + size.height < table.children.length && table.children[upperLeft.row + size.height].children[upperLeft.col].dataset.id == id) {
+	while(upperLeft.row + size.height < table.children.length 
+		&& upperLeft.col < table.children[upperLeft.row + size.height].children.length 
+		&& table.children[upperLeft.row + size.height].children[upperLeft.col].dataset.id == id) {
 		size.height++;
 	}
 	const row = table.children[upperLeft.row];

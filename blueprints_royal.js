@@ -14,16 +14,18 @@ const blueprints = [
   A   
   A   
   A   
- xAx    
+ cCc    
  dB  
  dB  
  dB  
 
 
 A.height = (3 * B.height) + 1
-B.height >= 3
 A.width >= 1
 A.width is odd
+B.height >= 3
+C.width = A.width
+c travels vertically with C
 d is empty
 d.height = B.height
 d.width = (A.width + 1) / 2
