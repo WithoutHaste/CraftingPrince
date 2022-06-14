@@ -1,11 +1,12 @@
 const RULE_TYPES = {
 	NONE: "0",
-	EQUAL: "1",
-	GREATER_OR_EQUAL: "2",
-	EMPTY_TILE: "3",
-	IS_ODD: "4",
-	IS_EVEN: "5",
-	IS_MULTIPLE: "6",
+	LESS_OR_EQUAL: "1",
+	EQUAL: "2",
+	GREATER_OR_EQUAL: "3",
+	EMPTY_TILE: "4",
+	IS_ODD: "5",
+	IS_EVEN: "6",
+	IS_MULTIPLE: "7",
 };
 const CALC_TYPES = {
 	NONE: "0",
@@ -19,6 +20,7 @@ const CALC_TYPES = {
 const isWhitespace = /^\s*$/;
 const isId = /[a-wy-zA-WY-Z]/;
 const isIdMetric = /^([a-wy-zA-WY-Z])\.(width|height)/;
+const isLessOrEqual = /^([a-zA-Z])\.(height|width) <= (.*)$/;
 const isEqual = /^([a-zA-Z])\.(height|width) = (.*)$/;
 const isGreaterOrEqual = /^([a-zA-Z])\.(height|width) >= (.*)$/;
 const isEmptyTile = /^([a-zA-Z]) is empty$/;
@@ -77,6 +79,12 @@ function isValidMetric(id, metric, value) {
 			continue;
 		if(rule.left.metric != metric)
 			continue;
+		if(rule.type == RULE_TYPES.LESS_OR_EQUAL) {
+			if(rule.right.type == CALC_TYPES.CONSTANT) {
+				if(!(value <= rule.right.constant))
+					return false;
+			}
+		}
 		if(rule.type == RULE_TYPES.EQUAL) {
 			if(rule.right.type == CALC_TYPES.CONSTANT) {
 				if(value != rule.right.constant)
@@ -219,7 +227,18 @@ function parseRule(raw) {
 		type: RULE_TYPES.NONE,
 	};
 
-	let matches = raw.match(isEqual);
+	let matches = raw.match(isLessOrEqual);
+	if(matches != null) {
+		rule.type = RULE_TYPES.LESS_OR_EQUAL;
+		rule.left = {
+			id: matches[1],
+			metric: matches[2],
+		};
+		rule.right = parseRuleRightSide(matches[3]);
+		return rule;
+	}
+
+	matches = raw.match(isEqual);
 	if(matches != null) {
 		rule.type = RULE_TYPES.EQUAL;
 		rule.left = {

@@ -153,6 +153,27 @@ QUnit.test("rule parsing: EQUAL METRIC", function( assert ) {
 	assert.deepEqual(rule, expected, "rule deep equal");
 });
 
+QUnit.test("rule parsing: LESS OR EQUAL CONSTANT", function( assert ) {
+	let raw = "A.width <= 1";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.LESS_OR_EQUAL,
+		left: {
+			id: "A",
+			metric: "width",
+		},
+		right: {
+			raw: "1",
+			type: CALC_TYPES.CONSTANT,
+			constant: 1,
+		},
+	};
+
+	let rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
 QUnit.test("rule parsing: GREATER OR EQUAL CONSTANT", function( assert ) {
 	let raw = "A.width >= 1";
 	let expected = {

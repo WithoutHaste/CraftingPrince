@@ -139,6 +139,48 @@ QUnit.test("is valid metric: EQUAL CONSTANT", function( assert ) {
 	assert.false(result, "false");
 });
 
+QUnit.test("is valid metric: LESS OR EQUAL CONSTANT", function( assert ) {
+	let id = 'A';
+	let metric = 'width';
+	let value = 1;
+	let blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} <= ${value}`),
+		],
+		isValidMetric: isValidMetric,
+	};
+
+	let result = blueprint.isValidMetric(id, metric, value);
+
+	assert.true(result, "true equal");
+	
+	//----------------------------
+
+	blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} <= ${value + 1}`),
+		],
+		isValidMetric: isValidMetric,
+	};
+
+	result = blueprint.isValidMetric(id, metric, value);
+
+	assert.true(result, "true less");
+	
+	//----------------------------
+
+	blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} <= ${value - 1}`),
+		],
+		isValidMetric: isValidMetric,
+	};
+
+	result = blueprint.isValidMetric(id, metric, value);
+
+	assert.false(result, "false greater than");
+});
+
 QUnit.test("is valid metric: GREATER OR EQUAL CONSTANT", function( assert ) {
 	let id = 'A';
 	let metric = 'width';
