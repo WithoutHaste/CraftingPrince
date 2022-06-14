@@ -171,6 +171,9 @@ function updateBlueprintDisplay() {
 			return;
 		}
 		const moveCell = row.children[c];
+		//if moveCell.dataset.id has travellers, they need to come also - whole segments at once
+		//hmm
+		//should i translate these into a graph of segments instead of a row/col table, for the first step? that's how the logic works
 		row.insertBefore(insertCell, moveCell);
 		row.removeChild(moveCell);
 		shiftCellsDown(r + 1, c, moveCell);

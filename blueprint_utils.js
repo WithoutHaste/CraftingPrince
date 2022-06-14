@@ -7,6 +7,7 @@ const RULE_TYPES = {
 	IS_ODD: "5",
 	IS_EVEN: "6",
 	IS_MULTIPLE: "7",
+	TRAVELS_VERTICALLY_WITH: "8",
 };
 const CALC_TYPES = {
 	NONE: "0",
@@ -31,6 +32,7 @@ const isConstant = /^(\d+)$/;
 const isAddition = /^(.*) \+ (.*)$/;
 const isMultiplied = /^(\d*)([a-zA-Z])\.(height|width)$/;
 const isDivided = /^(.*) \/ (.*)$/;
+const isTravelsVerticallyWith = /^([a-zA-Z]) travels vertically with ([a-zA-Z])$/;
 
 function fillOutBlueprints() {
 	for(let i = 0; i < blueprints.length; i++) {
@@ -289,6 +291,14 @@ function parseRule(raw) {
 		rule.id = matches[1];
 		rule.metric = matches[2];
 		rule.multiple = parseInt(matches[3]);
+		return rule;
+	}
+
+	matches = raw.match(isTravelsVerticallyWith);
+	if(matches != null) {
+		rule.type = RULE_TYPES.TRAVELS_VERTICALLY_WITH;
+		rule.id = matches[1];
+		rule.withId = matches[2];
 		return rule;
 	}
 
