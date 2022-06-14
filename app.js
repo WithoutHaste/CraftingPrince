@@ -115,10 +115,7 @@ function updateBlueprintDisplay() {
 		if(upperLeft == null)
 			continue; //shouldn't hit this
 		const currentSize = calcSegmentSize(table, id, upperLeft);
-		if(targetWidth == 0 || targetHeight == 0) {
-			//TODO remove segment
-			continue;
-		}
+
 		while(currentSize.width < targetWidth) {
 			for(let r = upperLeft.row; r < upperLeft.row + currentSize.height; r++) {
 				const row = table.children[r];
@@ -129,7 +126,10 @@ function updateBlueprintDisplay() {
 			currentSize.width++;
 		}
 		while(currentSize.width > targetWidth) {
-			//TODO decrease by 1
+			for(let r = upperLeft.row; r < upperLeft.row + currentSize.height; r++) {
+				const row = table.children[r];
+				row.removeChild(row.children[upperLeft.col]);
+			}
 			currentSize.width--;
 		}
 		while(currentSize.height < targetHeight) {
@@ -140,7 +140,8 @@ function updateBlueprintDisplay() {
 			currentSize.height++;
 		}
 		while(currentSize.height > targetHeight) {
-			//TODO decrease by 1
+			//TODO deleting the whole row is not right, there could be unrelated cells there - I really want to pull-in the existing cells in their "column"
+			table.removeChild(table.children[upperLeft.row]);
 			currentSize.height--;
 		}
 	}
