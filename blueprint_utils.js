@@ -5,6 +5,7 @@ const RULE_TYPES = {
 	EMPTY_TILE: "3",
 	IS_ODD: "4",
 	IS_EVEN: "5",
+	IS_MULTIPLE: "6",
 };
 const CALC_TYPES = {
 	NONE: "0",
@@ -23,6 +24,7 @@ const isGreaterOrEqual = /^([a-zA-Z])\.(height|width) >= (.*)$/;
 const isEmptyTile = /^([a-zA-Z]) is empty$/;
 const isOdd = /^([a-zA-Z])\.(height|width) is odd$/;
 const isEven = /^([a-zA-Z])\.(height|width) is even$/;
+const isMultiple = /^([a-zA-Z])\.(height|width) is multiple of (\d+)$/;
 const isConstant = /^(\d+)$/;
 const isAddition = /^(.*) \+ (.*)$/;
 const isMultiplied = /^(\d*)([a-zA-Z])\.(height|width)$/;
@@ -58,6 +60,14 @@ function isValidMetric(id, metric, value) {
 			if(rule.metric != metric)
 				continue;
 			if(value % 2 != 0)
+				return false;
+		}
+		if(rule.type == RULE_TYPES.IS_MULTIPLE) {
+			if(rule.id != id)
+				continue;
+			if(rule.metric != metric)
+				continue;
+			if(value % rule.multiple != 0)
 				return false;
 		}
 
@@ -251,6 +261,15 @@ function parseRule(raw) {
 		rule.type = RULE_TYPES.IS_EVEN;
 		rule.id = matches[1];
 		rule.metric = matches[2];
+		return rule;
+	}
+
+	matches = raw.match(isMultiple);
+	if(matches != null) {
+		rule.type = RULE_TYPES.IS_MULTIPLE;
+		rule.id = matches[1];
+		rule.metric = matches[2];
+		rule.multiple = parseInt(matches[3]);
 		return rule;
 	}
 

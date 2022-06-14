@@ -60,9 +60,9 @@ d.width = (A.width + 1) / 2
    x  
    x  
     
-A.height + C.height = 20
+A.height = 20 - C.height
 C.height is multiple of 4
-A.height is multiple of 4
+C.height <= 20
 d travels with A
 e travels with A
 d.width < e.width

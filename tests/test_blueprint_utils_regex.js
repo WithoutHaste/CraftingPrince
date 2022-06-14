@@ -32,3 +32,43 @@ QUnit.test("regex: IS WHITESPACE", function( assert ) {
 	result = isWhitespace.test("\t\n");
 	assert.true(result, "tab endline");
 });
+
+QUnit.test("regex: IS MULTIPLE", function( assert ) {
+	let result = isMultiple.test("A.height is multiple of 0");
+	assert.true(result, "A.height 0");
+	
+	//----------------------------
+
+	result = isMultiple.test("A.width is multiple of 0");
+	assert.true(result, "A.width 0");
+	
+	//----------------------------
+
+	result = isMultiple.test("a.height is multiple of 0");
+	assert.true(result, "a.height 0");
+	
+	//----------------------------
+
+	result = isMultiple.test("a.width is multiple of 0");
+	assert.true(result, "a.width 0");
+	
+	//----------------------------
+
+	result = isMultiple.test("A.height is multiple of 3");
+	assert.true(result, "A.height 3");
+
+	//----------------------------
+
+	result = isMultiple.test("A.height is multiple of 30");
+	assert.true(result, "A.height 30");
+
+	//----------------------------
+
+	result = isMultiple.test("A.height is multiple of -3");
+	assert.false(result, "A.height -3");
+
+	//----------------------------
+
+	result = isMultiple.test("A is multiple of 3");
+	assert.false(result, "A 3");
+});

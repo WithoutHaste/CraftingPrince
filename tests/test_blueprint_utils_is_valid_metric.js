@@ -84,6 +84,32 @@ QUnit.test("is valid metric: IS EVEN", function( assert ) {
 	assert.false(result, "false");
 });
 
+QUnit.test("is valid metric: IS MULTIPLE", function( assert ) {
+	let id = 'A';
+	let metric = 'width';
+	let multiple = 3;
+	let blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} is multiple of ${multiple}`),
+		],
+		isValidMetric: isValidMetric,
+	};
+
+	let result = blueprint.isValidMetric(id, metric, 3);
+
+	assert.true(result, "1x");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 6);
+	assert.true(result, "2x");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 4);
+	assert.false(result, "+1");
+});
+
 QUnit.test("is valid metric: EQUAL CONSTANT", function( assert ) {
 	let id = 'A';
 	let metric = 'width';

@@ -52,6 +52,21 @@ QUnit.test("rule parsing: IS EVEN", function( assert ) {
 	assert.deepEqual(rule, expected, "rule deep equal");
 });
 
+QUnit.test("rule parsing: IS MULTIPLE", function( assert ) {
+	let raw = "A.height is multiple of 3";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.IS_MULTIPLE,
+		id: "A",
+		metric: "height",
+		multiple: 3,
+	};
+
+	let rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
 QUnit.test("rule parsing: EQUAL CONSTANT", function( assert ) {
 	let raw = "A.width = 1";
 	let expected = {
