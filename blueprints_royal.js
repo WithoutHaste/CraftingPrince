@@ -29,6 +29,11 @@ c travels vertically with C
 d is empty
 d.height = B.height
 d.width = (A.width + 1) / 2
+A|C
+c-C
+C-c
+C|B
+d-B
     `
 	},
 	{

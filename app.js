@@ -199,7 +199,132 @@ function generateDefaultBlueprintDisplay(blueprint) {
 		}
 		table.appendChild(row);
 	}
+	
+	console.log(convertBlueprintToSegmentGraph(blueprint));
+	
 	return table;
+}
+
+//TODO follow up with convertSegmentGraphToDisplayTable
+//TODO unit tests
+function convertBlueprintToSegmentGraph(blueprint) {
+	//scan linearly to find all the segments
+    //get a collection of coords based on ids and contiguousness
+	//supports multiple disconnected segments with the same id
+	var cellSets = []; //each element is a set, each set has an id and an array of contiguous "cells" (row/col coords), ids are not unique
+	const lines = blueprint.pattern.split('\n');
+	for(let r = 0; r < lines.length; r++) {
+		for(let c = 0; c < lines[r].length; c++) {
+			const id = lines[r][c];
+			if(id == ' ')
+				continue;
+			var cellSet = {
+				id: id,
+				cells: [ { row: r, col: c } ],
+				minRow: r,
+				minCol: c,
+				maxRow: r,
+				maxCol: c,
+			};
+			addCellSet(cellSet);
+		}
+	}
+	
+	//simplify it to upperLeft corner, width, height
+	//segments are assumed to be rectangular
+	var segments = [];
+	for(let i = 0; i < cellSets.length; i++) {
+		var cellSet = cellSets[i];
+		var segment = {
+			id: cellSet.id,
+			upperLeft: {
+				row: cellSet.minRow,
+				col: cellSet.minCol,
+			},
+			size: {
+				width: cellSet.maxCol - cellSet.minCol + 1,
+				height: cellSet.maxRow - cellSet.minRow + 1,
+			},
+		};
+		segments.append(segment);
+	}
+	
+	//relate the segments to each other "below" "right of" etc bi-directional
+	for(let p = 0; p < segments.length; p++) {
+		let primary = primary[p];
+		for(let s = p + 1; s < segments.length; s++) {
+			let secondary = segments[s];
+			if(segmentIsAbove(primary, secondary)) {
+		//TODO
+			}
+			if(segmentIsBelow(primary, secondary)) {
+		//TODO
+			}
+			if(segmentIsLeftOf(primary, secondary)) {
+		//TODO
+			}
+			if(segmentIsRightOf(primary, secondary)) {
+		//TODO
+			}
+		}		
+	}
+	
+	function segmentIsAbove(primary, secondary) {
+		//TODO
+	}
+	
+	//insert a cellSet into collection cellSets, based on contiguous-ness rules
+	//does not assume segments will be rectangular
+	function addCellSet(newCellSet) {
+		for(let i = 0; i < cellSets.length; i++) {
+			var cellSet = cellSets[i];
+			if(cellSetsMatch(newCellSet, cellSet)) {
+				mergeCellSets(toHere=newCellSet, fromHere=cellSet);
+				cellSets.splice(i, 1); //remove i-th from array
+				i--;
+			}
+		}
+		cellSets.push(newCellSet);
+	}
+	
+	//merge cellSet fromHere into cellSet toHere
+	function mergeCellSets(toHere, fromHere) {
+		toHere.cells = toHere.cells.concat(fromHere.cells);
+		toHere.minRow = Math.min(toHere.minRow, fromHere.minRow);
+		toHere.minCol = Math.min(toHere.minCol, fromHere.minCol);
+		toHere.maxRow = Math.max(toHere.maxRow, fromHere.maxRow);
+		toHere.maxCol = Math.max(toHere.maxCol, fromHere.maxCol);
+	}
+
+	//returns true if these cellSets should be merged together
+	function cellSetsMatch(setA, setB) {
+		if(setA.id != setB.id)
+			return false;
+		for(let a = 0; a < setA.cells.length; a++) {
+			for(let b = 0; b < setB.cells.length; b++) {
+				if(cellsAreAdjacent(setA.cells[a], setB.cells[b]))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	//return true if cells are adjacent vertically or horizontally
+	function cellsAreAdjacent(cellA, cellB) {
+		if(cellA.row == cellB.row) {
+			if(cellA.col == cellB.col - 1)
+				return true;
+			if(cellA.col == cellB.col + 1)
+				return true;
+		}
+		if(cellA.col == cellB.col) {
+			if(cellA.row == cellB.row - 1)
+				return true;
+			if(cellA.row == cellB.row + 1)
+				return true;
+		}
+		return false;
+	}
 }
 
 //return {row,col} coordinate of upper-left corner of selected segment
