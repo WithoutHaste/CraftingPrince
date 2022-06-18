@@ -106,16 +106,15 @@ function displayBlueprint(blueprintContainer, blueprint) {
 //going to try drawing the basic first, then use edit-in-place
 function updateBlueprintDisplay() {
 	const table = generateDefaultBlueprintDisplay(selectedBlueprint);
-
+	
+	//change all widths first, then change all heights, to avoid issues in longsword blueprint
 	for(let i = 0; i < selectedBlueprint.ids.length; i++) {
 		const id = selectedBlueprint.ids[i];
 		const targetWidth = selectedBlueprint.metrics[id].width;
-		const targetHeight = selectedBlueprint.metrics[id].height;
 		const upperLeft = findSegment(table, id);
 		if(upperLeft == null)
 			continue; //shouldn't hit this
 		const currentSize = calcSegmentSize(table, id, upperLeft);
-
 		while(currentSize.width < targetWidth) {
 			for(let r = upperLeft.row; r < upperLeft.row + currentSize.height; r++) {
 				const row = table.children[r];
@@ -124,7 +123,7 @@ function updateBlueprintDisplay() {
 				row.insertBefore(newCell, modelCell);
 			}
 			currentSize.width++;
-		}
+		} 
 		while(currentSize.width > targetWidth) {
 			for(let r = upperLeft.row; r < upperLeft.row + currentSize.height; r++) {
 				const row = table.children[r];
@@ -132,6 +131,14 @@ function updateBlueprintDisplay() {
 			}
 			currentSize.width--;
 		}
+	}
+	for(let i = 0; i < selectedBlueprint.ids.length; i++) {
+		const id = selectedBlueprint.ids[i];
+		const targetHeight = selectedBlueprint.metrics[id].height;
+		const upperLeft = findSegment(table, id);
+		if(upperLeft == null)
+			continue; //shouldn't hit this
+		const currentSize = calcSegmentSize(table, id, upperLeft);
 		while(currentSize.height < targetHeight) {
 			for(let c = upperLeft.col; c < upperLeft.col + currentSize.width; c++) {
 				const modelCell = table.children[upperLeft.row].children[c];
