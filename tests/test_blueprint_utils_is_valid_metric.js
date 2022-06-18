@@ -29,6 +29,7 @@ QUnit.test("is valid metric: NO APPLICABLE RULES", function( assert ) {
 		rules: [
 			parseRule(`${id} is empty`), //display issue only
 			parseRule(`${id} travels vertically with B`), //movement rule
+			parseRule(`${id} is center`), //movement rule
 			parseRule(`B.${metric} >= 5`), //wrong id
 			parseRule(`${id}.height >= 5`), //wrong metric
 		],

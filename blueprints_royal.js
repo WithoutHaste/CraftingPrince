@@ -15,9 +15,9 @@ const blueprints = [
   A   
   A   
  cCc    
- dB  
- dB  
- dB  
+  B  
+  B  
+  B  
 
 
 A.height = (3 * B.height) + 1
@@ -25,10 +25,7 @@ A.width >= 1
 A.width is odd
 B.height >= 3
 C.width = A.width
-c travels vertically with C
-d is empty
-d.height = B.height
-d.width = (A.width + 1) / 2
+C is center
     `
 	},
 	{
@@ -70,6 +67,7 @@ e travels with A
 d.width < e.width
 d.width >= 1
 e.width is prime
+A is center
 
 notes on intentions
 - add as many "pointy" sections as you want, but the whole polearm cannot become too long

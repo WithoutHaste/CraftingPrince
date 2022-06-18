@@ -8,7 +8,8 @@ const RULE_TYPES = {
 	IS_ODD: "6",
 	IS_EVEN: "7",
 	IS_MULTIPLE: "8",
-	TRAVELS_VERTICALLY_WITH: "9",
+	IS_CENTER: "9",
+	TRAVELS_VERTICALLY_WITH: "10",
 };
 const CALC_TYPES = { //numbered to not overlap with RULE_TYPES, make bugs more obvious
 	NONE: "0",
@@ -34,6 +35,7 @@ const isConstant = /^(\d+)$/;
 const isAddition = /^(.*) \+ (.*)$/;
 const isMultiplied = /^(\d*)([a-zA-Z])\.(height|width)$/;
 const isDivided = /^(.*) \/ (.*)$/;
+const isCenter = /^([a-zA-Z]) is center$/;
 const isTravelsVerticallyWith = /^([a-zA-Z]) travels vertically with ([a-zA-Z])$/;
 
 function fillOutBlueprints() {
@@ -318,6 +320,13 @@ function parseRule(raw) {
 		rule.id = matches[1];
 		rule.metric = matches[2];
 		rule.multiple = parseInt(matches[3]);
+		return rule;
+	}
+
+	matches = raw.match(isCenter);
+	if(matches != null) {
+		rule.type = RULE_TYPES.IS_CENTER;
+		rule.id = matches[1];
 		return rule;
 	}
 

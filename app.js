@@ -219,7 +219,7 @@ function generateDefaultBlueprintDisplay(blueprint) {
 		table.appendChild(row);
 	}
 	
-	//console.log(convertBlueprintToSegmentGraph(blueprint));
+	console.log(convertBlueprintToSegmentGraph(blueprint));
 	
 	return table;
 }
@@ -231,7 +231,6 @@ function generateEmptyBlueprintCell() {
 	return cell;
 }
 
-/*
 //TODO follow up with convertSegmentGraphToDisplayTable
 //TODO unit tests
 function convertBlueprintToSegmentGraph(blueprint) {
@@ -410,7 +409,6 @@ function convertBlueprintToSegmentGraph(blueprint) {
 		return false;
 	}
 }
-*/
 
 //return {row,col} coordinate of upper-left corner of selected segment
 //TODO return array b/c there can be multiple matching segments
