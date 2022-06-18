@@ -20,7 +20,7 @@ const blueprints = [
   B  
 
 
-A.height = (3 * B.height) + 1
+A.height = 3 * B.height
 A.width >= 1
 A.width is odd
 B.height >= 3

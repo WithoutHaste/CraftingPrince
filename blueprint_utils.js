@@ -44,6 +44,7 @@ function fillOutBlueprints() {
 		blueprint.isValidMetric = isValidMetric;
 		blueprint.propagateMetricChange = propagateMetricChange;
 		blueprint.runRuleRightSideCalculation = runRuleRightSideCalculation;
+		blueprint.getCenterId = getCenterId;
 		blueprint.getTravelersVertical = getTravelersVertical;
 	}	
 }
@@ -149,6 +150,17 @@ function runRuleRightSideCalculation(rightSide) {
 		case CALC_TYPES.MULTIPLY: return left * right;
 		case CALC_TYPES.DIVIDE: return Math.floor(left / right);
 	}
+}
+
+//limit - one center per blueprint
+function getCenterId() {
+	for(let i = 0; i < this.rules.length; i++) {
+		let rule = this.rules[i];
+		if(rule.type == RULE_TYPES.IS_CENTER) {
+			return rule.id;
+		}
+	}
+	return null;
 }
 
 //returns an array of ids

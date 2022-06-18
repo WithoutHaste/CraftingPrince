@@ -105,96 +105,164 @@ function displayBlueprint(blueprintContainer, blueprint) {
 
 //going to try drawing the basic first, then use edit-in-place
 function updateBlueprintDisplay() {
-	const table = generateDefaultBlueprintDisplay(selectedBlueprint);
+	const segmentTree = convertBlueprintToSegmentTree(selectedBlueprint);
 	
-	//change all widths first, then change all heights, to avoid issues in longsword blueprint
+	//update dimensions
 	for(let i = 0; i < selectedBlueprint.ids.length; i++) {
 		const id = selectedBlueprint.ids[i];
-		const targetWidth = selectedBlueprint.metrics[id].width;
-		const upperLeft = findSegment(table, id);
-		if(upperLeft == null)
+		let segment = null;
+		for(let s = 0; s < segmentTree.length; s++) {
+			if(segmentTree[s].id == id) {
+				segment = segmentTree[s];
+				break;
+			}
+		}
+		if(segment == null)
 			continue; //shouldn't hit this
-		const currentSize = calcSegmentSize(table, id, upperLeft);
-		while(currentSize.width < targetWidth) {
-			for(let r = upperLeft.row; r < upperLeft.row + currentSize.height; r++) {
-				const row = table.children[r];
-				const modelCell = row.children[upperLeft.col];
-				const newCell = modelCell.cloneNode(deep=true);
-				row.insertBefore(newCell, modelCell);
-			}
-			currentSize.width++;
-		} 
-		while(currentSize.width > targetWidth) {
-			for(let r = upperLeft.row; r < upperLeft.row + currentSize.height; r++) {
-				const row = table.children[r];
-				row.removeChild(row.children[upperLeft.col]);
-			}
-			currentSize.width--;
-		}
+		segment.size.width = selectedBlueprint.metrics[id].width;
+		segment.size.height = selectedBlueprint.metrics[id].height;
 	}
-	for(let i = 0; i < selectedBlueprint.ids.length; i++) {
-		const id = selectedBlueprint.ids[i];
-		const targetHeight = selectedBlueprint.metrics[id].height;
-		const upperLeft = findSegment(table, id);
-		if(upperLeft == null)
-			continue; //shouldn't hit this
-		const currentSize = calcSegmentSize(table, id, upperLeft);
-		while(currentSize.height < targetHeight) {
-			for(let c = upperLeft.col; c < upperLeft.col + currentSize.width; c++) {
-				const modelCell = table.children[upperLeft.row].children[c];
-				shiftCellsDown(upperLeft.row, c, modelCell.cloneNode(deep=true));
-			}
-			currentSize.height++;
-		}
-		while(currentSize.height > targetHeight) {
-			//TODO deleting the whole row is not right, there could be unrelated cells there - I really want to pull-in the existing cells in their "column"
-			table.removeChild(table.children[upperLeft.row]);
-			currentSize.height--;
-		}
+	//update locations
+	const segmentRoot = segmentTree[0];
+	updateLocations(segmentRoot);
+	//bring everything into positive coordinate space
+	let minRow = getMinRow(segmentRoot);
+	let minCol = getMinCol(segmentRoot);
+	if(minRow < 0) {
+		shiftDown(segmentRoot, -1 * minRow);
 	}
-	
+	if(minCol < 0) {
+		shiftRight(segmentRoot, -1 * minCol);
+	}	
+	//convert into a table
+	let maxRow = getMaxRow(segmentRoot);
+	let maxCol = getMaxCol(segmentRoot);
+	var table = document.createElement('table');
+	for(let r = 0; r <= maxRow; r++) {
+		var row = document.createElement('tr');
+		for(let c = 0; c <= maxCol; c++) {
+			var col = document.createElement('td');
+			row.appendChild(col);
+		}
+		table.appendChild(row);
+	}
+	applyToTable(table, segmentRoot);
 	blueprintContainer.innerHTML = "";
 	blueprintContainer.appendChild(table);
 	
-	//starting with r-th row, replace the c-th cell with `insertCell`, shifting the current cell down to the same position in the next row
-	function shiftCellsDown(r, c, insertCell) {
-		if(table.children.length <= r) {
-			//last one
-			const row = document.createElement('tr');
-			for(let i = 0; i < c; i++) {
-				row.appendChild(document.createElement('td'));
-			}
-			row.appendChild(insertCell);
-			table.appendChild(row);
-			return;
+	function updateLocations(root) {
+		//everything is centered on its root
+		//assumes there are no loops in the tree
+		root.bottom = root.top + root.size.height - 1; //needed just for first root
+		root.right = root.left + root.size.width - 1; //needed just for first root
+		for(let i = 0; i < root.isAbove.length; i++) {
+			let child = root.isAbove[i];
+			child.top = root.bottom + 1;
+			child.bottom = child.top + child.size.height - 1;
+			centerVertically(root, child);
+			updateLocations(child);
 		}
-		const row = table.children[r];
-		if(row.children.length <= c) {
-			//last one
-			for(let i = row.children.length; i < c; i++) {
-				row.appendChild(document.createElement('td'));
-			}
-			row.appendChild(insertCell);
-			return;
+		for(let i = 0; i < root.isBelow.length; i++) {
+			let child = root.isBelow[i];
+			child.bottom = root.top - 1;
+			child.top = child.bottom - child.size.height + 1;
+			centerVertically(root, child);
+			updateLocations(child);
 		}
-		const moveCell = row.children[c];
-			//check for travelers
-			//does not support traveler segments more than 1 cell wide yet
-			//does not support chained-travelers yet
-			var travelers = selectedBlueprint.getTravelersVertical(moveCell.dataset.id);
-			if(travelers.length > 0) {
-				//check left
-				if(c-1 >= 0 && travelers.includes(row.children[c-1].dataset.id)) {
-					shiftCellsDown(r, c-1, generateEmptyBlueprintCell());
-				}				
-				//check right
-				if(c+1 < row.children.length && travelers.includes(row.children[c+1].dataset.id)) {
-					shiftCellsDown(r, c+1, generateEmptyBlueprintCell());
-				}				
+		for(let i = 0; i < root.isLeftOf.length; i++) {
+			let child = root.isLeftOf[i];
+			child.left = root.right + 1;
+			child.right = child.left + child.size.width - 1;
+			centerHorizontally(root, child);
+			updateLocations(child);
+		}
+		for(let i = 0; i < root.isRightOf.length; i++) {
+			let child = root.isRightOf[i];
+			child.right = root.left - 1;
+			child.left = child.right - child.size.width + 1;
+			centerHorizontally(root, child);
+			updateLocations(child);
+		}
+	}
+	
+	function centerVertically(primary, secondary) {
+		let center = primary.left + Math.floor(primary.size.width / 2);
+		secondary.left = center - Math.floor(secondary.size.width / 2);
+		secondary.right = secondary.left + secondary.size.width - 1;
+	}
+
+	function centerHorizontally(primary, secondary) {
+		let center = primary.top + Math.floor(primary.size.height / 2);
+		secondary.top = center - Math.floor(secondary.size.height / 2);
+		secondary.bottom = secondary.top + secondary.size.height - 1;
+	}
+	
+	function getMinRow(root) {
+		let minRow = root.top;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			minRow = Math.min(minRow, getMinRow(children[i]));
+		}
+		return minRow;
+	}
+	
+	function getMinCol(root) {
+		let minCol = root.left;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			minCol = Math.min(minCol, getMinCol(children[i]));
+		}
+		return minCol;
+	}
+	
+	function getMaxRow(root) {
+		let maxRow = root.bottom;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			maxRow = Math.max(maxRow, getMaxRow(children[i]));
+		}
+		return maxRow;
+	}
+	
+	function getMaxCol(root) {
+		let maxCol = root.right;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			maxCol = Math.max(maxCol, getMaxCol(children[i]));
+		}
+		return maxCol;
+	}
+	
+	function shiftDown(root, distance) {
+		root.top += distance;
+		root.bottom += distance;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			shiftDown(children[i], distance);
+		}
+	}
+	
+	function shiftRight(root, distance) {
+		root.left += distance;
+		root.right += distance;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			shiftRight(children[i], distance);
+		}
+	}
+	
+	function applyToTable(table, root) {
+		for(let r = root.top; r <= root.bottom; r++) {
+			for(let c = root.left; c <= root.right; c++) {
+				var cell = table.children[r].children[c];
+				cell.innerHTML = root.id;
 			}
-		row.insertBefore(insertCell, moveCell);
-		row.removeChild(moveCell);
-		shiftCellsDown(r + 1, c, moveCell);
+		}
+
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			applyToTable(table, children[i]);
+		}
 	}
 }
 
@@ -219,8 +287,6 @@ function generateDefaultBlueprintDisplay(blueprint) {
 		table.appendChild(row);
 	}
 	
-	console.log(convertBlueprintToSegmentGraph(blueprint));
-	
 	return table;
 }
 
@@ -231,9 +297,7 @@ function generateEmptyBlueprintCell() {
 	return cell;
 }
 
-//TODO follow up with convertSegmentGraphToDisplayTable
-//TODO unit tests
-function convertBlueprintToSegmentGraph(blueprint) {
+function convertBlueprintToSegmentTree(blueprint) {
 	//scan linearly to find all the segments
     //get a collection of coords based on ids and contiguousness
 	//supports multiple disconnected segments with the same id
@@ -275,6 +339,12 @@ function convertBlueprintToSegmentGraph(blueprint) {
 			isBelow: [],
 			isLeftOf: [],
 			isRightOf: [],
+			getChildren: function() {
+				var result = this.isAbove.concat(this.isBelow);
+				result = result.concat(this.isLeftOf);
+				result = result.concat(this.isRightOf);
+				return result;
+			},
 		};
 		segments.push(segment);
 	}
@@ -282,7 +352,19 @@ function convertBlueprintToSegmentGraph(blueprint) {
 	//relate the segments to each other "below" "right of" etc
 	//the first segment discovered becomes the root of the tree, no loops are recorded
 	//gradually transfers segments from array 'segments' to array 'connectedSegments'
-	let connectedSegments = [ segments.shift() ];
+	let connectedSegments = [];
+	const centerId = blueprint.getCenterId();
+	for(let j = 0; j < segments.length; j++) {
+		let segment = segments[j];
+		if(segment.id == centerId) {
+			connectedSegments.push(segment);
+			segments.splice(j, 1);
+			break;
+		}
+	}
+	if(connectedSegments.length == 0) {
+		connectedSegments.push(segments.shift()); //if there is no identified center, start anywhere
+	}
 	let p = 0;
 	while(p < connectedSegments.length) {
 		let primary = connectedSegments[p];
