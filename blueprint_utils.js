@@ -1,26 +1,28 @@
 const RULE_TYPES = {
 	NONE: "0",
-	LESS_OR_EQUAL: "1",
-	EQUAL: "2",
-	GREATER_OR_EQUAL: "3",
-	EMPTY_TILE: "4",
-	IS_ODD: "5",
-	IS_EVEN: "6",
-	IS_MULTIPLE: "7",
-	TRAVELS_VERTICALLY_WITH: "8",
+	LESS: "1",
+	LESS_OR_EQUAL: "2",
+	EQUAL: "3",
+	GREATER_OR_EQUAL: "4",
+	EMPTY_TILE: "5",
+	IS_ODD: "6",
+	IS_EVEN: "7",
+	IS_MULTIPLE: "8",
+	TRAVELS_VERTICALLY_WITH: "9",
 };
-const CALC_TYPES = {
+const CALC_TYPES = { //numbered to not overlap with RULE_TYPES, make bugs more obvious
 	NONE: "0",
-	CONSTANT: "1",
-	METRIC: "2",
-	ADD: "3",
-	SUBTRACT: "4",
-	MULTIPLY: "5",
-	DIVIDE: "6",
+	CONSTANT: "100",
+	METRIC: "101",
+	ADD: "102",
+	SUBTRACT: "103",
+	MULTIPLY: "104",
+	DIVIDE: "105",
 };
 const isWhitespace = /^\s*$/;
 const isId = /[a-wy-zA-WY-Z]/;
 const isIdMetric = /^([a-wy-zA-WY-Z])\.(width|height)/;
+const isLess = /^([a-zA-Z])\.(height|width) < (.*)$/;
 const isLessOrEqual = /^([a-zA-Z])\.(height|width) <= (.*)$/;
 const isEqual = /^([a-zA-Z])\.(height|width) = (.*)$/;
 const isGreaterOrEqual = /^([a-zA-Z])\.(height|width) >= (.*)$/;
@@ -82,23 +84,22 @@ function isValidMetric(id, metric, value) {
 			continue;
 		if(rule.left.metric != metric)
 			continue;
-		if(rule.type == RULE_TYPES.LESS_OR_EQUAL) {
-			if(rule.right.type == CALC_TYPES.CONSTANT) {
-				if(!(value <= rule.right.constant))
-					return false;
-			}
+		let rightSideValue = this.runRuleRightSideCalculation(rule.right);
+		if(rule.type == RULE_TYPES.LESS) {
+			if(!(value < rightSideValue))
+				return false;
 		}
-		if(rule.type == RULE_TYPES.EQUAL) {
-			if(rule.right.type == CALC_TYPES.CONSTANT) {
-				if(value != rule.right.constant)
-					return false;
-			}
+		else if(rule.type == RULE_TYPES.LESS_OR_EQUAL) {
+			if(!(value <= rightSideValue))
+				return false;
 		}
-		if(rule.type == RULE_TYPES.GREATER_OR_EQUAL) {
-			if(rule.right.type == CALC_TYPES.CONSTANT) {
-				if(!(value >= rule.right.constant))
-					return false;
-			}
+		else if(rule.type == RULE_TYPES.EQUAL) {
+			if(value != rightSideValue)
+				return false;
+		}
+		else if(rule.type == RULE_TYPES.GREATER_OR_EQUAL) {
+			if(!(value >= rightSideValue))
+				return false;
 		}
 	}
 	return true;
@@ -244,7 +245,18 @@ function parseRule(raw) {
 		type: RULE_TYPES.NONE,
 	};
 
-	let matches = raw.match(isLessOrEqual);
+	let matches = raw.match(isLess);
+	if(matches != null) {
+		rule.type = RULE_TYPES.LESS;
+		rule.left = {
+			id: matches[1],
+			metric: matches[2],
+		};
+		rule.right = parseRuleRightSide(matches[3]);
+		return rule;
+	}
+
+	matches = raw.match(isLessOrEqual);
 	if(matches != null) {
 		rule.type = RULE_TYPES.LESS_OR_EQUAL;
 		rule.left = {

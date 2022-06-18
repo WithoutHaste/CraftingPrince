@@ -2,6 +2,7 @@ QUnit.test("is valid metric: NEGATIVE", function( assert ) {
 	let blueprint = {
 		rules: [],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric('A', 'width', -1);
@@ -13,6 +14,7 @@ QUnit.test("is valid metric: NO RULES", function( assert ) {
 	let blueprint = {
 		rules: [],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric('A', 'width', 0);
@@ -26,15 +28,12 @@ QUnit.test("is valid metric: NO APPLICABLE RULES", function( assert ) {
 	let blueprint = {
 		rules: [
 			parseRule(`${id} is empty`), //display issue only
+			parseRule(`${id} travels vertically with B`), //movement rule
 			parseRule(`B.${metric} >= 5`), //wrong id
 			parseRule(`${id}.height >= 5`), //wrong metric
-			//only checking for single-level constants
-			parseRule(`${id}.${metric} = 5 + 1`),
-			parseRule(`${id}.${metric} >= 5 + 1`),
-			parseRule(`${id}.${metric} = B.height`),
-			parseRule(`${id}.${metric} >= B.height`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric(id, metric, 0);
@@ -50,6 +49,7 @@ QUnit.test("is valid metric: IS ODD", function( assert ) {
 			parseRule(`${id}.${metric} is odd`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric(id, metric, 3);
@@ -71,6 +71,7 @@ QUnit.test("is valid metric: IS EVEN", function( assert ) {
 			parseRule(`${id}.${metric} is even`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric(id, metric, 4);
@@ -93,6 +94,7 @@ QUnit.test("is valid metric: IS MULTIPLE", function( assert ) {
 			parseRule(`${id}.${metric} is multiple of ${multiple}`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric(id, metric, 3);
@@ -119,6 +121,7 @@ QUnit.test("is valid metric: EQUAL CONSTANT", function( assert ) {
 			parseRule(`${id}.${metric} = ${value}`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric(id, metric, value);
@@ -132,6 +135,7 @@ QUnit.test("is valid metric: EQUAL CONSTANT", function( assert ) {
 			parseRule(`${id}.${metric} = ${value + 1}`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	result = blueprint.isValidMetric(id, metric, value);
@@ -148,6 +152,7 @@ QUnit.test("is valid metric: LESS OR EQUAL CONSTANT", function( assert ) {
 			parseRule(`${id}.${metric} <= ${value}`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric(id, metric, value);
@@ -161,6 +166,7 @@ QUnit.test("is valid metric: LESS OR EQUAL CONSTANT", function( assert ) {
 			parseRule(`${id}.${metric} <= ${value + 1}`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	result = blueprint.isValidMetric(id, metric, value);
@@ -174,11 +180,84 @@ QUnit.test("is valid metric: LESS OR EQUAL CONSTANT", function( assert ) {
 			parseRule(`${id}.${metric} <= ${value - 1}`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	result = blueprint.isValidMetric(id, metric, value);
 
 	assert.false(result, "false greater than");
+});
+
+QUnit.test("is valid metric: LESS CONSTANT", function( assert ) {
+	let id = 'A';
+	let metric = 'width';
+	let value = 1;
+	let blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} < ${value + 1}`),
+		],
+		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
+	};
+
+	let result = blueprint.isValidMetric(id, metric, value);
+
+	assert.true(result, "true less");
+	
+	//----------------------------
+
+	blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} < ${value}`),
+		],
+		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
+	};
+
+	result = blueprint.isValidMetric(id, metric, value);
+
+	assert.false(result, "false equal");
+});
+
+QUnit.test("is valid metric: LESS METRIC", function( assert ) {
+	let id = 'A';
+	let metric = 'width';
+	let value = 1;
+	let blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} < B.height`),
+		],
+		metrics: {
+			B: {
+				height: value + 1
+			}
+		},
+		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
+	};
+
+	let result = blueprint.isValidMetric(id, metric, value);
+
+	assert.true(result, "true less");
+	
+	//----------------------------
+
+	blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} < B.height`),
+		],
+		metrics: {
+			B: {
+				height: value
+			}
+		},
+		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
+	};
+
+	result = blueprint.isValidMetric(id, metric, value);
+
+	assert.false(result, "false equal");
 });
 
 QUnit.test("is valid metric: GREATER OR EQUAL CONSTANT", function( assert ) {
@@ -190,6 +269,7 @@ QUnit.test("is valid metric: GREATER OR EQUAL CONSTANT", function( assert ) {
 			parseRule(`${id}.${metric} >= ${value}`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric(id, metric, value);
@@ -203,6 +283,7 @@ QUnit.test("is valid metric: GREATER OR EQUAL CONSTANT", function( assert ) {
 			parseRule(`${id}.${metric} >= ${value - 1}`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	result = blueprint.isValidMetric(id, metric, value);
@@ -216,6 +297,7 @@ QUnit.test("is valid metric: GREATER OR EQUAL CONSTANT", function( assert ) {
 			parseRule(`${id}.${metric} >= ${value + 1}`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	result = blueprint.isValidMetric(id, metric, value);
@@ -232,6 +314,7 @@ QUnit.test("is valid metric: CHECKS ALL RULES", function( assert ) {
 			parseRule(`${id}.${metric} is even`),
 		],
 		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
 	};
 
 	let result = blueprint.isValidMetric(id, metric, 4);

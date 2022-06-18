@@ -459,7 +459,7 @@ function displayRules(ruleContainer, blueprint) {
 		div.innerHTML = rule.raw;
 		ruleContainer.appendChild(div);
 		
-		addEditableMetrics(rule.right);
+		addEditableMetricsRule(rule);
 	}
 
 	for(let i = 0; i < editableMetrics.length; i++) {
@@ -478,7 +478,24 @@ function displayRules(ruleContainer, blueprint) {
 		ruleContainer.prepend(div);
 	}
 	
-	function addEditableMetrics(rule) {
+	function addEditableMetricsRule(rule) {
+		const comparisonRuleTypes = [
+			RULE_TYPES.LESS,
+			RULE_TYPES.LESS_OR_EQUAL,
+			RULE_TYPES.GREATER_OR_EQUAL,
+		];
+		if(comparisonRuleTypes.includes(rule.type)) {
+			if(rule.right.type == CALC_TYPES.CONSTANT) {
+				if(!duplicateEditableMetric(rule.left.id, rule.left.metric)) {
+					editableMetrics.push({ id: rule.left.id, metric: rule.left.metric });
+				}
+			}
+		}		
+		
+		addEditableMetricsRightSide(rule.right);
+	}
+	
+	function addEditableMetricsRightSide(rule) {
 		if(rule == undefined)
 			return;
 		if(rule.type == CALC_TYPES.METRIC) {
@@ -487,10 +504,10 @@ function displayRules(ruleContainer, blueprint) {
 			}
 		}
 		if("left" in rule) {
-			addEditableMetrics(rule.left);
+			addEditableMetricsRightSide(rule.left);
 		}
 		if("right" in rule) {
-			addEditableMetrics(rule.right);
+			addEditableMetricsRightSide(rule.right);
 		}
 	}
 	
