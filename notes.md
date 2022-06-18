@@ -4,6 +4,8 @@ note: blueprints should default to a valid layout
 note: all segments in a blueprint must be rectangular (segment: contiguous collection of same-id squares)
 note: assumes entire blueprint is contiguous (ids marked "empty" count here)
 
+Matt said, since the final item size is not being changed, then you are changing the resolution within the item
+
 crafting system inspired by "The King's Avatar" manga
 - how could a crafting system support the sort of creativity hinted at in the manga?
 

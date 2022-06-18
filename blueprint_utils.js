@@ -40,6 +40,7 @@ function fillOutBlueprints() {
 		blueprint.isValidMetric = isValidMetric;
 		blueprint.propagateMetricChange = propagateMetricChange;
 		blueprint.runRuleRightSideCalculation = runRuleRightSideCalculation;
+		blueprint.getTravelersVertical = getTravelersVertical;
 	}	
 }
 
@@ -145,6 +146,20 @@ function runRuleRightSideCalculation(rightSide) {
 		case CALC_TYPES.MULTIPLY: return left * right;
 		case CALC_TYPES.DIVIDE: return Math.floor(left / right);
 	}
+}
+
+//returns an array of ids
+function getTravelersVertical(withId) {
+	var result = [];
+	for(let i = 0; i < this.rules.length; i++) {
+		var rule = this.rules[i];
+		if(rule.type != RULE_TYPES.TRAVELS_VERTICALLY_WITH)
+			continue;
+		if(rule.withId != withId)
+			continue;
+		result.push(rule.id);
+	}
+	return result;
 }
 //END INSIDE BLUEPRINT OBJECT
 /////////////////////////////

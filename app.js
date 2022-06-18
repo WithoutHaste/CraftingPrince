@@ -171,9 +171,20 @@ function updateBlueprintDisplay() {
 			return;
 		}
 		const moveCell = row.children[c];
-		//if moveCell.dataset.id has travellers, they need to come also - whole segments at once
-		//hmm
-		//should i translate these into a graph of segments instead of a row/col table, for the first step? that's how the logic works
+			//check for travelers
+			//does not support traveler segments more than 1 cell wide yet
+			//does not support chained-travelers yet
+			var travelers = selectedBlueprint.getTravelersVertical(moveCell.dataset.id);
+			if(travelers.length > 0) {
+				//check left
+				if(c-1 >= 0 && travelers.includes(row.children[c-1].dataset.id)) {
+					shiftCellsDown(r, c-1, generateEmptyBlueprintCell());
+				}				
+				//check right
+				if(c+1 < row.children.length && travelers.includes(row.children[c+1].dataset.id)) {
+					shiftCellsDown(r, c+1, generateEmptyBlueprintCell());
+				}				
+			}
 		row.insertBefore(insertCell, moveCell);
 		row.removeChild(moveCell);
 		shiftCellsDown(r + 1, c, moveCell);
@@ -192,8 +203,9 @@ function generateDefaultBlueprintDisplay(blueprint) {
 			const cell = document.createElement('td');
 			cell.innerHTML = id;
 			cell.dataset.id = id;
+			cell.classList.add('blueprint');
 			if(blueprint.emptyIds.includes(id)) {
-				cell.style.backgroundColor = '#ccc';
+				cell.classList.add('empty');
 			}
 			row.appendChild(cell);
 		}
@@ -203,6 +215,13 @@ function generateDefaultBlueprintDisplay(blueprint) {
 	//console.log(convertBlueprintToSegmentGraph(blueprint));
 	
 	return table;
+}
+
+function generateEmptyBlueprintCell() {
+	const cell = document.createElement('td');
+	cell.classList.add('blueprint');
+	cell.classList.add('empty');
+	return cell;
 }
 
 /*
