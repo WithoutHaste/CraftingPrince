@@ -475,7 +475,7 @@ function displayRules(ruleContainer, blueprint) {
 		input.addEventListener('input', metricOnChange);
 		input.addEventListener('blur', metricOnBlur);
 		div.appendChild(input);
-		ruleContainer.appendChild(div);
+		ruleContainer.prepend(div);
 	}
 	
 	function addEditableMetrics(rule) {
