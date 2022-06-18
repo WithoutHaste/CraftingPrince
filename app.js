@@ -200,11 +200,12 @@ function generateDefaultBlueprintDisplay(blueprint) {
 		table.appendChild(row);
 	}
 	
-	console.log(convertBlueprintToSegmentGraph(blueprint));
+	//console.log(convertBlueprintToSegmentGraph(blueprint));
 	
 	return table;
 }
 
+/*
 //TODO follow up with convertSegmentGraphToDisplayTable
 //TODO unit tests
 function convertBlueprintToSegmentGraph(blueprint) {
@@ -237,40 +238,97 @@ function convertBlueprintToSegmentGraph(blueprint) {
 		var cellSet = cellSets[i];
 		var segment = {
 			id: cellSet.id,
-			upperLeft: {
-				row: cellSet.minRow,
-				col: cellSet.minCol,
-			},
+			top: cellSet.minRow,
+			bottom: cellSet.maxRow,
+			left: cellSet.minCol,
+			right: cellSet.maxCol,
 			size: {
 				width: cellSet.maxCol - cellSet.minCol + 1,
 				height: cellSet.maxRow - cellSet.minRow + 1,
 			},
+			isAbove: [],
+			isBelow: [],
+			isLeftOf: [],
+			isRightOf: [],
 		};
-		segments.append(segment);
+		segments.push(segment);
 	}
 	
-	//relate the segments to each other "below" "right of" etc bi-directional
-	for(let p = 0; p < segments.length; p++) {
-		let primary = primary[p];
-		for(let s = p + 1; s < segments.length; s++) {
+	//relate the segments to each other "below" "right of" etc
+	//the first segment discovered becomes the root of the tree, no loops are recorded
+	//gradually transfers segments from array 'segments' to array 'connectedSegments'
+	let connectedSegments = [ segments.shift() ];
+	let p = 0;
+	while(p < connectedSegments.length) {
+		let primary = connectedSegments[p];
+		for(let s = 0; s < segments.length; s++) {
 			let secondary = segments[s];
+			let foundConnection = false;
 			if(segmentIsAbove(primary, secondary)) {
-		//TODO
+				primary.isAbove.push(secondary);
+				foundConnection = true;
 			}
-			if(segmentIsBelow(primary, secondary)) {
-		//TODO
+			else if(segmentIsBelow(primary, secondary)) {
+				primary.isBelow.push(secondary);
+				foundConnection = true;
 			}
-			if(segmentIsLeftOf(primary, secondary)) {
-		//TODO
+			else if(segmentIsLeftOf(primary, secondary)) {
+				primary.isLeftOf.push(secondary);
+				foundConnection = true;
 			}
-			if(segmentIsRightOf(primary, secondary)) {
-		//TODO
+			else if(segmentIsRightOf(primary, secondary)) {
+				primary.isRightOf.push(secondary);
+				foundConnection = true;
 			}
-		}		
+			if(foundConnection) {
+				connectedSegments.push(secondary);
+				segments.splice(s, 1);
+				s--;
+			}
+		}
+		p++;
 	}
+	
+	return connectedSegments;
 	
 	function segmentIsAbove(primary, secondary) {
-		//TODO
+		if(primary.bottom + 1 != secondary.top)
+			return false;
+		if(primary.left > secondary.right)
+			return false;
+		if(primary.right < secondary.left)
+			return false;
+		return true;
+	}
+	
+	function segmentIsBelow(primary, secondary) {
+		if(primary.top - 1 != secondary.bottom)
+			return false;
+		if(primary.left > secondary.right)
+			return false;
+		if(primary.right < secondary.left)
+			return false;
+		return true;
+	}
+	
+	function segmentIsLeftOf(primary, secondary) {
+		if(primary.right + 1 != secondary.left)
+			return false;
+		if(primary.bottom > secondary.top)
+			return false;
+		if(primary.top < secondary.bottom)
+			return false;
+		return true;
+	}
+	
+	function segmentIsRightOf(primary, secondary) {
+		if(primary.left - 1 != secondary.right)
+			return false;
+		if(primary.bottom > secondary.top)
+			return false;
+		if(primary.top < secondary.bottom)
+			return false;
+		return true;
 	}
 	
 	//insert a cellSet into collection cellSets, based on contiguous-ness rules
@@ -326,6 +384,7 @@ function convertBlueprintToSegmentGraph(blueprint) {
 		return false;
 	}
 }
+*/
 
 //return {row,col} coordinate of upper-left corner of selected segment
 //TODO return array b/c there can be multiple matching segments
