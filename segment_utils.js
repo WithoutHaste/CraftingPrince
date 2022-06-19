@@ -14,11 +14,14 @@ function generateUpdatedBlueprintTable(blueprint) {
 	for(let i = 0; i < blueprint.ids.length; i++) {
 		const id = blueprint.ids[i];
 		let segment = null;
-		for(let s = 0; s < segmentTree.length; s++) {
+		for(let s = 0; s < segmentTree.length; s++) { //TODO CONSIDER navigate via the tree so all navigations are consistent - will not matter if duplicated segments are not added to "segmentTree"
 			if(segmentTree[s].id == id) {
 				segment = segmentTree[s];
+				let originalWidth = segment.size.width;
+				let originalHeight = segment.size.height;
 				segment.size.width = blueprint.metrics[id].width;
 				segment.size.height = blueprint.metrics[id].height;
+				duplicateTravelers(segment, originalWidth, originalHeight);
 			}
 		}
 	}
@@ -49,6 +52,76 @@ function generateUpdatedBlueprintTable(blueprint) {
 	applyToTable(table, segmentRoot);
 	return table;
 	
+	function duplicateTravelers(segment, originalWidth, originalHeight) {
+		let travelerIds = blueprint.getTravelers(segment.id);
+		for(let t = 0; t < travelerIds.length; t++) {
+			let travelerId = travelerIds[t];
+			let originalArrayLength = segment.isAbove.length;
+			for(let i = 0; i < originalArrayLength; i++) {
+				let child = segment.isAbove[i];
+				if(child.id != travelerId)
+					continue;
+				if(child.segmentPlacement != SEGMENT_PLACEMENTS.INDEXED)
+					continue;
+				let index = child.segmentPlacementIndex + originalWidth;
+				while(index < segment.size.width) {
+					let childClone = cloneObject(child);
+					childClone.segmentPlacementIndex = index;
+					segment.isAbove.push(childClone);
+					index += originalWidth;
+				}
+			}
+			//--------------
+			originalArrayLength = segment.isBelow.length;
+			for(let i = 0; i < originalArrayLength; i++) {
+				let child = segment.isBelow[i];
+				if(child.id != travelerId)
+					continue;
+				if(child.segmentPlacement != SEGMENT_PLACEMENTS.INDEXED)
+					continue;
+				let index = child.segmentPlacementIndex + originalWidth;
+				while(index < segment.size.width) {
+					let childClone = cloneObject(child);
+					childClone.segmentPlacementIndex = index;
+					segment.isBelow.push(childClone);
+					index += originalWidth;
+				}
+			}
+			//--------------
+			originalArrayLength = segment.isLeftOf.length;
+			for(let i = 0; i < originalArrayLength; i++) {
+				let child = segment.isLeftOf[i];
+				if(child.id != travelerId)
+					continue;
+				if(child.segmentPlacement != SEGMENT_PLACEMENTS.INDEXED)
+					continue;
+				let index = child.segmentPlacementIndex + originalHeight;
+				while(index < segment.size.height) {
+					let childClone = cloneObject(child);
+					childClone.segmentPlacementIndex = index;
+					segment.isLeftOf.push(childClone);
+					index += originalHeight;
+				}
+			}
+			//--------------
+			originalArrayLength = segment.isRightOf.length;
+			for(let i = 0; i < originalArrayLength; i++) {
+				let child = segment.isRightOf[i];
+				if(child.id != travelerId)
+					continue;
+				if(child.segmentPlacement != SEGMENT_PLACEMENTS.INDEXED)
+					continue;
+				let index = child.segmentPlacementIndex + originalHeight;
+				while(index < segment.size.height) {
+					let childClone = cloneObject(child);
+					childClone.segmentPlacementIndex = index;
+					segment.isRightOf.push(childClone);
+					index += originalHeight;
+				}
+			}
+		}
+	}
+	
 	function updateLocations(root) {
 		//assumes there are no loops in the tree
 		root.bottom = root.top + root.size.height - 1; //needed just for first root
@@ -66,6 +139,9 @@ function generateUpdatedBlueprintTable(blueprint) {
 			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_RIGHT) {
 				justifyRight(root, child);
 			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.INDEXED) {
+				indexLeft(root, child);
+			}
 			updateLocations(child);
 		}
 		for(let i = 0; i < root.isBelow.length; i++) {
@@ -80,6 +156,9 @@ function generateUpdatedBlueprintTable(blueprint) {
 			}
 			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_RIGHT) {
 				justifyRight(root, child);
+			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.INDEXED) {
+				indexLeft(root, child);
 			}
 			updateLocations(child);
 		}
@@ -96,6 +175,9 @@ function generateUpdatedBlueprintTable(blueprint) {
 			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_BOTTOM) {
 				justifyBottom(root, child);
 			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.INDEXED) {
+				indexTop(root, child);
+			}
 			updateLocations(child);
 		}
 		for(let i = 0; i < root.isRightOf.length; i++) {
@@ -110,6 +192,9 @@ function generateUpdatedBlueprintTable(blueprint) {
 			}
 			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_BOTTOM) {
 				justifyBottom(root, child);
+			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.INDEXED) {
+				indexTop(root, child);
 			}
 			updateLocations(child);
 		}
@@ -145,6 +230,16 @@ function generateUpdatedBlueprintTable(blueprint) {
 	function justifyRight(primary, secondary) {
 		secondary.right = primary.right;
 		secondary.left = secondary.right - secondary.size.width + 1;
+	}
+	
+	function indexTop(primary, secondary) {
+		secondary.top = primary.top + secondary.segmentPlacementIndex;
+		secondary.bottom = secondary.top + secondary.size.height - 1;
+	}
+	
+	function indexLeft(primary, secondary) {
+		secondary.left = primary.left + secondary.segmentPlacementIndex;
+		secondary.right = secondary.right + secondary.size.width - 1;
 	}
 	
 	function getMinRow(root) {
@@ -216,6 +311,11 @@ function generateUpdatedBlueprintTable(blueprint) {
 	}
 }
 
+function cloneObject(object) {
+	return Object.assign({}, object); //does clone functions, but is shallow clone of object
+	//return JSON.parse(JSON.stringify(object)) //does not clone functions
+}
+
 function convertBlueprintToSegmentTree(blueprint) {
 	//scan linearly to find all the segments
     //get a collection of coords based on ids and contiguousness
@@ -271,10 +371,6 @@ function convertBlueprintToSegmentTree(blueprint) {
 	//relate the segments to each other "below" "right of" etc
 	//the first segment discovered becomes the root of the tree, no loops are recorded
 	//gradually transfers segments from array 'segments' to array 'connectedSegments'
-	//
-	//if segments are currently centered on each other, they are marked to stay centered
-	//if a segment is currently justified (ex: align to top), it is marked to stay justified
-	//if a segment is currently indexed (ex: align to 2nd 'A'), it is marked to stay indexed
 	let connectedSegments = [];
 	const centerId = blueprint.getCenterId();
 	for(let j = 0; j < segments.length; j++) {
@@ -296,7 +392,11 @@ function convertBlueprintToSegmentTree(blueprint) {
 			let foundConnection = false;
 			if(segmentIsAbove(primary, secondary)) {
 				primary.isAbove.push(secondary);
-				if(segmentIsCenteredVertically(primary, secondary)) {
+				if(blueprint.getTravelers(primary.id).includes(secondary.id)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.INDEXED;
+					secondary.segmentPlacementIndex = secondary.left - primary.left;
+				}
+				else if(segmentIsCenteredVertically(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				}
 				else if(segmentIsJustifiedLeft(primary, secondary)) {
@@ -313,7 +413,11 @@ function convertBlueprintToSegmentTree(blueprint) {
 			}
 			else if(segmentIsBelow(primary, secondary)) {
 				primary.isBelow.push(secondary);
-				if(segmentIsCenteredVertically(primary, secondary)) {
+				if(blueprint.getTravelers(primary.id).includes(secondary.id)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.INDEXED;
+					secondary.segmentPlacementIndex = secondary.left - primary.left;
+				}
+				else if(segmentIsCenteredVertically(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				}
 				else if(segmentIsJustifiedLeft(primary, secondary)) {
@@ -330,7 +434,11 @@ function convertBlueprintToSegmentTree(blueprint) {
 			}
 			else if(segmentIsLeftOf(primary, secondary)) {
 				primary.isLeftOf.push(secondary);
-				if(segmentIsCenteredHorizontally(primary, secondary)) {
+				if(blueprint.getTravelers(primary.id).includes(secondary.id)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.INDEXED;
+					secondary.segmentPlacementIndex = secondary.top - primary.top;
+				}
+				else if(segmentIsCenteredHorizontally(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				}
 				else if(segmentIsJustifiedTop(primary, secondary)) {
@@ -347,7 +455,11 @@ function convertBlueprintToSegmentTree(blueprint) {
 			}
 			else if(segmentIsRightOf(primary, secondary)) {
 				primary.isRightOf.push(secondary);
-				if(segmentIsCenteredHorizontally(primary, secondary)) {
+				if(blueprint.getTravelers(primary.id).includes(secondary.id)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.INDEXED;
+					secondary.segmentPlacementIndex = secondary.top - primary.top;
+				}
+				else if(segmentIsCenteredHorizontally(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				}
 				else if(segmentIsJustifiedTop(primary, secondary)) {
