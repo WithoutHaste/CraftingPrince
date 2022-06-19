@@ -15,20 +15,17 @@ const blueprints = [
   A   
   A   
  cCc    
- dB  
- dB  
- dB  
+  B  
+  B  
+  B  
 
 
-A.height = (3 * B.height) + 1
+A.height = 3 * B.height
 A.width >= 1
 A.width is odd
 B.height >= 3
 C.width = A.width
-c travels vertically with C
-d is empty
-d.height = B.height
-d.width = (A.width + 1) / 2
+C is center
     `
 	},
 	{
@@ -70,6 +67,7 @@ e travels with A
 d.width < e.width
 d.width >= 1
 e.width is prime
+A is center
 
 notes on intentions
 - add as many "pointy" sections as you want, but the whole polearm cannot become too long
@@ -104,8 +102,8 @@ notes on intentions
 		name: "padded armor",
 		raw: `
     
-  xxxxaxaxaxxxx 
-  xxxxaxaxaxxxx
+  XXXxaxaxaxXXX 
+  XXXxaxaxaxXXX
   bb xaxaxax bb
   bb xaxaxax bb
      xaxaxax  
@@ -115,7 +113,7 @@ notes on intentions
 
 
 a is all one type of material
-a.width = 1..N
+a.width >= 1
 b.height >= 2
 		`
 	},

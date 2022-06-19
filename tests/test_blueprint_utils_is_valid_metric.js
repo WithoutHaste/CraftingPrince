@@ -29,6 +29,7 @@ QUnit.test("is valid metric: NO APPLICABLE RULES", function( assert ) {
 		rules: [
 			parseRule(`${id} is empty`), //display issue only
 			parseRule(`${id} travels vertically with B`), //movement rule
+			parseRule(`${id} is center`), //movement rule
 			parseRule(`B.${metric} >= 5`), //wrong id
 			parseRule(`${id}.height >= 5`), //wrong metric
 		],
@@ -110,6 +111,67 @@ QUnit.test("is valid metric: IS MULTIPLE", function( assert ) {
 
 	result = blueprint.isValidMetric(id, metric, 4);
 	assert.false(result, "+1");
+});
+
+QUnit.test("is valid metric: IS PRIME", function( assert ) {
+	let id = 'A';
+	let metric = 'width';
+	let blueprint = {
+		rules: [
+			parseRule(`${id}.${metric} is prime`),
+		],
+		isValidMetric: isValidMetric,
+		runRuleRightSideCalculation: runRuleRightSideCalculation,
+	};
+
+	let result = blueprint.isValidMetric(id, metric, 1);
+
+	assert.false(result, "1");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 2);
+	assert.true(result, "2");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 3);
+	assert.true(result, "3");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 4);
+	assert.false(result, "4");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 5);
+	assert.true(result, "5");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 6);
+	assert.false(result, "6");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 7);
+	assert.true(result, "7");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 8);
+	assert.false(result, "8");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 9);
+	assert.false(result, "9");
+	
+	//----------------------------
+
+	result = blueprint.isValidMetric(id, metric, 10);
+	assert.false(result, "10");
 });
 
 QUnit.test("is valid metric: EQUAL CONSTANT", function( assert ) {

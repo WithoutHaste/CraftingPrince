@@ -8,15 +8,36 @@
         <title>Prince Crafting System</title>
 		<script type="text/javascript" src="blueprints_royal.js"></script>
 		<script type="text/javascript" src="blueprint_utils.js"></script>
+		<script type="text/javascript" src="segment_utils.js"></script>
 		<script type="text/javascript" src="app.js"></script>
 		<style type="text/css">
+			#blueprint-selector {
+				margin-bottom: 1em;
+			}
+			#blueprint-container {
+				display: inline-block;
+				font-family: 'Courier';
+			}
+			#rule-container {
+				display: inline-block;
+				margin-left: 2em;
+				font-family: 'Courier';
+			}
 			td.blueprint.empty {
 				background-color: #cccccc;
 			}
 		</style>
     </head>
     <body>
-		<h3>Prince Crafting System - for RPG/PVP - prototype</h3>
-        <div id='app'></div>
+		<h2>Prince Crafting System - for RPG/PVP - prototype</h2>
+		<h3>Step 1: select blueprint</h3>
+		<div id='blueprint-selector'></div>
+		<h3>Step 2: alter blueprint</h3>
+		<div>
+			<div id='blueprint-container'></div>
+			<div id='rule-container'></div>
+		</div>
+		<h3>Step 3: arrange materials</h3>
+		<div id='workbench-container'></div>
     </body>
 </html>

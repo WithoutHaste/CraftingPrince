@@ -2,6 +2,7 @@
 
 note: blueprints should default to a valid layout
 note: all segments in a blueprint must be rectangular (segment: contiguous collection of same-id squares)
+- there can be multiple non-contiguous segments with the same id - they must have duplicate dimensions (except for "x" and "X" which are not resizable and therefore can have different initial dimensions)
 note: assumes entire blueprint is contiguous (ids marked "empty" count here)
 
 Matt said, since the final item size is not being changed, then you are changing the resolution within the item

@@ -1,3 +1,71 @@
+QUnit.test("rule parsing: IS CENTER", function( assert ) {
+	let raw = "A is center";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.IS_CENTER,
+		id: "A",
+	};
+
+	let rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+
+	//------------------------------------
+
+	raw = "a is center";
+	expected = {
+		raw: raw,
+		type: RULE_TYPES.IS_CENTER,
+		id: "a",
+	};
+
+	rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
+QUnit.test("rule parsing: IS PRIME", function( assert ) {
+	let raw = "A.height is prime";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.IS_PRIME,
+		id: "A",
+		metric: "height",
+	};
+
+	let rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+
+	//------------------------------------
+
+	raw = "a.width is prime";
+	expected = {
+		raw: raw,
+		type: RULE_TYPES.IS_PRIME,
+		id: "a",
+		metric: "width",
+	};
+
+	rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
+QUnit.test("rule parsing: TRAVELS WITH", function( assert ) {
+	let raw = "A travels with B";
+	let expected = {
+		raw: raw,
+		type: RULE_TYPES.TRAVELS_WITH,
+		id: "A",
+		withId: "B",
+	};
+
+	let rule = parseRule(raw);
+
+	assert.deepEqual(rule, expected, "rule deep equal");
+});
+
 QUnit.test("rule parsing: IS EMPTY", function( assert ) {
 	let raw = "A is empty";
 	let expected = {

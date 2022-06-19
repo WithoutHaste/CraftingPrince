@@ -8,7 +8,9 @@ const RULE_TYPES = {
 	IS_ODD: "6",
 	IS_EVEN: "7",
 	IS_MULTIPLE: "8",
-	TRAVELS_VERTICALLY_WITH: "9",
+	IS_PRIME: "9",
+	IS_CENTER: "10",
+	TRAVELS_WITH: "11",
 };
 const CALC_TYPES = { //numbered to not overlap with RULE_TYPES, make bugs more obvious
 	NONE: "0",
@@ -30,11 +32,21 @@ const isEmptyTile = /^([a-zA-Z]) is empty$/;
 const isOdd = /^([a-zA-Z])\.(height|width) is odd$/;
 const isEven = /^([a-zA-Z])\.(height|width) is even$/;
 const isMultiple = /^([a-zA-Z])\.(height|width) is multiple of (\d+)$/;
+const isPrime = /^([a-zA-Z])\.(height|width) is prime$/;
 const isConstant = /^(\d+)$/;
 const isAddition = /^(.*) \+ (.*)$/;
 const isMultiplied = /^(\d*)([a-zA-Z])\.(height|width)$/;
 const isDivided = /^(.*) \/ (.*)$/;
-const isTravelsVerticallyWith = /^([a-zA-Z]) travels vertically with ([a-zA-Z])$/;
+const isCenter = /^([a-zA-Z]) is center$/;
+const isTravelsWith = /^([a-zA-Z]) travels with ([a-zA-Z])$/;
+
+const numbersPrime = [
+	2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
+ 	101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199,
+ 	211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293,
+	307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397,
+ 	401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499
+]; //up to 500
 
 function fillOutBlueprints() {
 	for(let i = 0; i < blueprints.length; i++) {
@@ -42,7 +54,8 @@ function fillOutBlueprints() {
 		blueprint.isValidMetric = isValidMetric;
 		blueprint.propagateMetricChange = propagateMetricChange;
 		blueprint.runRuleRightSideCalculation = runRuleRightSideCalculation;
-		blueprint.getTravelersVertical = getTravelersVertical;
+		blueprint.getCenterId = getCenterId;
+		blueprint.getTravelers = getTravelers;
 	}	
 }
 
@@ -75,6 +88,14 @@ function isValidMetric(id, metric, value) {
 			if(rule.metric != metric)
 				continue;
 			if(value % rule.multiple != 0)
+				return false;
+		}
+		if(rule.type == RULE_TYPES.IS_PRIME) {
+			if(rule.id != id)
+				continue;
+			if(rule.metric != metric)
+				continue;
+			if(!numbersPrime.includes(value))
 				return false;
 		}
 
@@ -149,12 +170,23 @@ function runRuleRightSideCalculation(rightSide) {
 	}
 }
 
+//limit - one center per blueprint
+function getCenterId() {
+	for(let i = 0; i < this.rules.length; i++) {
+		let rule = this.rules[i];
+		if(rule.type == RULE_TYPES.IS_CENTER) {
+			return rule.id;
+		}
+	}
+	return null;
+}
+
 //returns an array of ids
-function getTravelersVertical(withId) {
+function getTravelers(withId) {
 	var result = [];
 	for(let i = 0; i < this.rules.length; i++) {
 		var rule = this.rules[i];
-		if(rule.type != RULE_TYPES.TRAVELS_VERTICALLY_WITH)
+		if(rule.type != RULE_TYPES.TRAVELS_WITH)
 			continue;
 		if(rule.withId != withId)
 			continue;
@@ -321,9 +353,24 @@ function parseRule(raw) {
 		return rule;
 	}
 
-	matches = raw.match(isTravelsVerticallyWith);
+	matches = raw.match(isPrime);
 	if(matches != null) {
-		rule.type = RULE_TYPES.TRAVELS_VERTICALLY_WITH;
+		rule.type = RULE_TYPES.IS_PRIME;
+		rule.id = matches[1];
+		rule.metric = matches[2];
+		return rule;
+	}
+
+	matches = raw.match(isCenter);
+	if(matches != null) {
+		rule.type = RULE_TYPES.IS_CENTER;
+		rule.id = matches[1];
+		return rule;
+	}
+
+	matches = raw.match(isTravelsWith);
+	if(matches != null) {
+		rule.type = RULE_TYPES.TRAVELS_WITH;
 		rule.id = matches[1];
 		rule.withId = matches[2];
 		return rule;
