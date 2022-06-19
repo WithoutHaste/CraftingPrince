@@ -1,3 +1,173 @@
+const SEGMENT_PLACEMENTS = {
+	CENTERED: "0",
+	JUSTIFIED_TOP: "1",
+	JUSTIFIED_BOTTOM: "2",
+	JUSTIFIED_LEFT: "3",
+	JUSTIFIED_RIGHT: "4",
+	INDEXED: "5",
+};
+
+function generateUpdatedBlueprintTable(blueprint) {
+	const segmentTree = convertBlueprintToSegmentTree(blueprint);
+	
+	//update dimensions
+	for(let i = 0; i < blueprint.ids.length; i++) {
+		const id = blueprint.ids[i];
+		let segment = null;
+		for(let s = 0; s < segmentTree.length; s++) {
+			if(segmentTree[s].id == id) {
+				segment = segmentTree[s];
+				break;
+			}
+		}
+		if(segment == null)
+			continue; //shouldn't hit this
+		segment.size.width = blueprint.metrics[id].width;
+		segment.size.height = blueprint.metrics[id].height;
+	}
+	//update locations
+	const segmentRoot = segmentTree[0];
+	updateLocations(segmentRoot);
+	//bring everything into positive coordinate space
+	let minRow = getMinRow(segmentRoot);
+	let minCol = getMinCol(segmentRoot);
+	if(minRow < 0) {
+		shiftDown(segmentRoot, -1 * minRow);
+	}
+	if(minCol < 0) {
+		shiftRight(segmentRoot, -1 * minCol);
+	}	
+	//convert into a table
+	let maxRow = getMaxRow(segmentRoot);
+	let maxCol = getMaxCol(segmentRoot);
+	var table = document.createElement('table');
+	for(let r = 0; r <= maxRow; r++) {
+		var row = document.createElement('tr');
+		for(let c = 0; c <= maxCol; c++) {
+			var col = document.createElement('td');
+			row.appendChild(col);
+		}
+		table.appendChild(row);
+	}
+	applyToTable(table, segmentRoot);
+	return table;
+	
+	function updateLocations(root) {
+		//everything is centered on its root
+		//assumes there are no loops in the tree
+		root.bottom = root.top + root.size.height - 1; //needed just for first root
+		root.right = root.left + root.size.width - 1; //needed just for first root
+		for(let i = 0; i < root.isAbove.length; i++) {
+			let child = root.isAbove[i];
+			child.top = root.bottom + 1;
+			child.bottom = child.top + child.size.height - 1;
+			centerVertically(root, child);
+			updateLocations(child);
+		}
+		for(let i = 0; i < root.isBelow.length; i++) {
+			let child = root.isBelow[i];
+			child.bottom = root.top - 1;
+			child.top = child.bottom - child.size.height + 1;
+			centerVertically(root, child);
+			updateLocations(child);
+		}
+		for(let i = 0; i < root.isLeftOf.length; i++) {
+			let child = root.isLeftOf[i];
+			child.left = root.right + 1;
+			child.right = child.left + child.size.width - 1;
+			centerHorizontally(root, child);
+			updateLocations(child);
+		}
+		for(let i = 0; i < root.isRightOf.length; i++) {
+			let child = root.isRightOf[i];
+			child.right = root.left - 1;
+			child.left = child.right - child.size.width + 1;
+			centerHorizontally(root, child);
+			updateLocations(child);
+		}
+	}
+	
+	function centerVertically(primary, secondary) {
+		let center = primary.left + Math.floor(primary.size.width / 2);
+		secondary.left = center - Math.floor(secondary.size.width / 2);
+		secondary.right = secondary.left + secondary.size.width - 1;
+	}
+
+	function centerHorizontally(primary, secondary) {
+		let center = primary.top + Math.floor(primary.size.height / 2);
+		secondary.top = center - Math.floor(secondary.size.height / 2);
+		secondary.bottom = secondary.top + secondary.size.height - 1;
+	}
+	
+	function getMinRow(root) {
+		let minRow = root.top;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			minRow = Math.min(minRow, getMinRow(children[i]));
+		}
+		return minRow;
+	}
+	
+	function getMinCol(root) {
+		let minCol = root.left;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			minCol = Math.min(minCol, getMinCol(children[i]));
+		}
+		return minCol;
+	}
+	
+	function getMaxRow(root) {
+		let maxRow = root.bottom;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			maxRow = Math.max(maxRow, getMaxRow(children[i]));
+		}
+		return maxRow;
+	}
+	
+	function getMaxCol(root) {
+		let maxCol = root.right;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			maxCol = Math.max(maxCol, getMaxCol(children[i]));
+		}
+		return maxCol;
+	}
+	
+	function shiftDown(root, distance) {
+		root.top += distance;
+		root.bottom += distance;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			shiftDown(children[i], distance);
+		}
+	}
+	
+	function shiftRight(root, distance) {
+		root.left += distance;
+		root.right += distance;
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			shiftRight(children[i], distance);
+		}
+	}
+	
+	function applyToTable(table, root) {
+		for(let r = root.top; r <= root.bottom; r++) {
+			for(let c = root.left; c <= root.right; c++) {
+				var cell = table.children[r].children[c];
+				cell.innerHTML = root.id;
+			}
+		}
+
+		let children = root.getChildren();
+		for(let i = 0; i < children.length; i++) {
+			applyToTable(table, children[i]);
+		}
+	}
+}
+
 function convertBlueprintToSegmentTree(blueprint) {
 	//scan linearly to find all the segments
     //get a collection of coords based on ids and contiguousness
@@ -78,18 +248,22 @@ function convertBlueprintToSegmentTree(blueprint) {
 			let foundConnection = false;
 			if(segmentIsAbove(primary, secondary)) {
 				primary.isAbove.push(secondary);
+				secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				foundConnection = true;
 			}
 			else if(segmentIsBelow(primary, secondary)) {
 				primary.isBelow.push(secondary);
+				secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				foundConnection = true;
 			}
 			else if(segmentIsLeftOf(primary, secondary)) {
 				primary.isLeftOf.push(secondary);
+				secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				foundConnection = true;
 			}
 			else if(segmentIsRightOf(primary, secondary)) {
 				primary.isRightOf.push(secondary);
+				secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				foundConnection = true;
 			}
 			if(foundConnection) {
