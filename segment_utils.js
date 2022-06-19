@@ -41,10 +41,11 @@ function generateUpdatedBlueprintTable(blueprint) {
 	let maxRow = getMaxRow(segmentRoot);
 	let maxCol = getMaxCol(segmentRoot);
 	var table = document.createElement('table');
+	table.classList.add('blueprint');
 	for(let r = 0; r <= maxRow; r++) {
 		var row = document.createElement('tr');
 		for(let c = 0; c <= maxCol; c++) {
-			var col = document.createElement('td');
+			var col = generateEmptyBlueprintCell();
 			row.appendChild(col);
 		}
 		table.appendChild(row);
@@ -52,7 +53,7 @@ function generateUpdatedBlueprintTable(blueprint) {
 	applyToTable(table, segmentRoot);
 	return table;
 	
-	function duplicateTravelers(segment, originalWidth, originalHeight) {
+	function duplicateTravelers(segment, originalWidth, originalHeight) { //TODO delete travelers if too short for their index
 		let travelerIds = blueprint.getTravelers(segment.id);
 		for(let t = 0; t < travelerIds.length; t++) {
 			let travelerId = travelerIds[t];
@@ -301,6 +302,9 @@ function generateUpdatedBlueprintTable(blueprint) {
 			for(let c = root.left; c <= root.right; c++) {
 				var cell = table.children[r].children[c];
 				cell.innerHTML = root.id;
+				if(!blueprint.emptyIds.includes(root.id)) {
+					cell.classList.remove('empty');
+				}
 			}
 		}
 
