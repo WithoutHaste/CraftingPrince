@@ -17,13 +17,10 @@ function generateUpdatedBlueprintTable(blueprint) {
 		for(let s = 0; s < segmentTree.length; s++) {
 			if(segmentTree[s].id == id) {
 				segment = segmentTree[s];
-				break;
+				segment.size.width = blueprint.metrics[id].width;
+				segment.size.height = blueprint.metrics[id].height;
 			}
 		}
-		if(segment == null)
-			continue; //shouldn't hit this
-		segment.size.width = blueprint.metrics[id].width;
-		segment.size.height = blueprint.metrics[id].height;
 	}
 	//update locations
 	const segmentRoot = segmentTree[0];
