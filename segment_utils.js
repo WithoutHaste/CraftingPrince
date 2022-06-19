@@ -305,6 +305,10 @@ function convertBlueprintToSegmentTree(blueprint) {
 				else if(segmentIsJustifiedRight(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_RIGHT;
 				}
+				else {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.INDEXED;
+					secondary.segmentPlacementIndex = secondary.left - primary.left;
+				}
 				foundConnection = true;
 			}
 			else if(segmentIsBelow(primary, secondary)) {
@@ -317,6 +321,10 @@ function convertBlueprintToSegmentTree(blueprint) {
 				}
 				else if(segmentIsJustifiedRight(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_RIGHT;
+				}
+				else {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.INDEXED;
+					secondary.segmentPlacementIndex = secondary.left - primary.left;
 				}
 				foundConnection = true;
 			}
@@ -331,6 +339,10 @@ function convertBlueprintToSegmentTree(blueprint) {
 				else if(segmentIsJustifiedBottom(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_BOTTOM;
 				}
+				else {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.INDEXED;
+					secondary.segmentPlacementIndex = secondary.top - primary.top;
+				}
 				foundConnection = true;
 			}
 			else if(segmentIsRightOf(primary, secondary)) {
@@ -343,6 +355,10 @@ function convertBlueprintToSegmentTree(blueprint) {
 				}
 				else if(segmentIsJustifiedBottom(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_BOTTOM;
+				}
+				else {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.INDEXED;
+					secondary.segmentPlacementIndex = secondary.top - primary.top;
 				}
 				foundConnection = true;
 			}

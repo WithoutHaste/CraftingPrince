@@ -24,11 +24,11 @@ QUnit.test("rule parsing: IS CENTER", function( assert ) {
 	assert.deepEqual(rule, expected, "rule deep equal");
 });
 
-QUnit.test("rule parsing: TRAVELS VERTICALLY WITH", function( assert ) {
-	let raw = "A travels vertically with B";
+QUnit.test("rule parsing: TRAVELS WITH", function( assert ) {
+	let raw = "A travels with B";
 	let expected = {
 		raw: raw,
-		type: RULE_TYPES.TRAVELS_VERTICALLY_WITH,
+		type: RULE_TYPES.TRAVELS_WITH,
 		id: "A",
 		withId: "B",
 	};

@@ -9,7 +9,7 @@ const RULE_TYPES = {
 	IS_EVEN: "7",
 	IS_MULTIPLE: "8",
 	IS_CENTER: "9",
-	TRAVELS_VERTICALLY_WITH: "10",
+	TRAVELS_WITH: "10",
 };
 const CALC_TYPES = { //numbered to not overlap with RULE_TYPES, make bugs more obvious
 	NONE: "0",
@@ -36,7 +36,7 @@ const isAddition = /^(.*) \+ (.*)$/;
 const isMultiplied = /^(\d*)([a-zA-Z])\.(height|width)$/;
 const isDivided = /^(.*) \/ (.*)$/;
 const isCenter = /^([a-zA-Z]) is center$/;
-const isTravelsVerticallyWith = /^([a-zA-Z]) travels vertically with ([a-zA-Z])$/;
+const isTravelsWith = /^([a-zA-Z]) travels with ([a-zA-Z])$/;
 
 function fillOutBlueprints() {
 	for(let i = 0; i < blueprints.length; i++) {
@@ -45,7 +45,7 @@ function fillOutBlueprints() {
 		blueprint.propagateMetricChange = propagateMetricChange;
 		blueprint.runRuleRightSideCalculation = runRuleRightSideCalculation;
 		blueprint.getCenterId = getCenterId;
-		blueprint.getTravelersVertical = getTravelersVertical;
+		blueprint.getTravelers = getTravelers;
 	}	
 }
 
@@ -164,11 +164,11 @@ function getCenterId() {
 }
 
 //returns an array of ids
-function getTravelersVertical(withId) {
+function getTravelers(withId) {
 	var result = [];
 	for(let i = 0; i < this.rules.length; i++) {
 		var rule = this.rules[i];
-		if(rule.type != RULE_TYPES.TRAVELS_VERTICALLY_WITH)
+		if(rule.type != RULE_TYPES.TRAVELS_WITH)
 			continue;
 		if(rule.withId != withId)
 			continue;
@@ -342,9 +342,9 @@ function parseRule(raw) {
 		return rule;
 	}
 
-	matches = raw.match(isTravelsVerticallyWith);
+	matches = raw.match(isTravelsWith);
 	if(matches != null) {
-		rule.type = RULE_TYPES.TRAVELS_VERTICALLY_WITH;
+		rule.type = RULE_TYPES.TRAVELS_WITH;
 		rule.id = matches[1];
 		rule.withId = matches[2];
 		return rule;
