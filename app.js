@@ -2,7 +2,6 @@ window.addEventListener("load", run);
 
 const isInteger = /^\d+$/;
 
-var appContainer = null;
 var blueprintSelector = null;
 var blueprintContainer = null;
 var ruleContainer = null;
@@ -10,31 +9,22 @@ var ruleContainer = null;
 var selectedBlueprint = null;
 
 function run() {
-	appContainer = document.getElementById('app');
-	appContainer.innerHTML = "";
-	
-	let selectorContainer = document.createElement('div');
-	selectorContainer.style.marginBottom = '1em';
+	let selectorContainer = document.getElementById('blueprint-selector');
 	blueprintSelector = document.createElement('select');
 	fillBlueprintSelector();
 	blueprintSelector.addEventListener('change', resetSelectedBlueprint);
+	selectorContainer.innerHTML = "";
 	selectorContainer.appendChild(blueprintSelector);
-	appContainer.appendChild(selectorContainer);
 	
 	fillOutBlueprints(blueprints);
 	setSelectedBlueprint();
 	parseBlueprint(selectedBlueprint);
 
-	blueprintContainer = document.createElement('div');
-	blueprintContainer.style.fontFamily = 'Courier';
+	blueprintContainer = document.getElementById('blueprint-container');
 	displayBlueprint(blueprintContainer, selectedBlueprint);
-	appContainer.appendChild(blueprintContainer);
 	
-	ruleContainer = document.createElement('div');
-	ruleContainer.style.fontFamily = 'Courier';
-	ruleContainer.style.marginLeft = '2em';
+	ruleContainer = document.getElementById('rule-container');
 	displayRules(ruleContainer, selectedBlueprint);
-	appContainer.appendChild(ruleContainer);
 }
 
 function fillBlueprintSelector() {
