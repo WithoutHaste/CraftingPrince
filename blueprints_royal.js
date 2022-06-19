@@ -102,8 +102,8 @@ notes on intentions
 		name: "padded armor",
 		raw: `
     
-  xxxxaxaxaxxxx 
-  xxxxaxaxaxxxx
+  XXXxaxaxaxXXX 
+  XXXxaxaxaxXXX
   bb xaxaxax bb
   bb xaxaxax bb
      xaxaxax  
@@ -113,7 +113,7 @@ notes on intentions
 
 
 a is all one type of material
-a.width = 1..N
+a.width >= 1
 b.height >= 2
 		`
 	},
