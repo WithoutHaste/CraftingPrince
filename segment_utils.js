@@ -53,7 +53,6 @@ function generateUpdatedBlueprintTable(blueprint) {
 	return table;
 	
 	function updateLocations(root) {
-		//everything is centered on its root
 		//assumes there are no loops in the tree
 		root.bottom = root.top + root.size.height - 1; //needed just for first root
 		root.right = root.left + root.size.width - 1; //needed just for first root
@@ -61,28 +60,36 @@ function generateUpdatedBlueprintTable(blueprint) {
 			let child = root.isAbove[i];
 			child.top = root.bottom + 1;
 			child.bottom = child.top + child.size.height - 1;
-			centerVertically(root, child);
+			if(child.segmentPlacement == SEGMENT_PLACEMENTS.CENTERED) {
+				centerVertically(root, child);
+			}
 			updateLocations(child);
 		}
 		for(let i = 0; i < root.isBelow.length; i++) {
 			let child = root.isBelow[i];
 			child.bottom = root.top - 1;
 			child.top = child.bottom - child.size.height + 1;
-			centerVertically(root, child);
+			if(child.segmentPlacement == SEGMENT_PLACEMENTS.CENTERED) {
+				centerVertically(root, child);
+			}
 			updateLocations(child);
 		}
 		for(let i = 0; i < root.isLeftOf.length; i++) {
 			let child = root.isLeftOf[i];
 			child.left = root.right + 1;
 			child.right = child.left + child.size.width - 1;
-			centerHorizontally(root, child);
+			if(child.segmentPlacement == SEGMENT_PLACEMENTS.CENTERED) {
+				centerHorizontally(root, child);
+			}
 			updateLocations(child);
 		}
 		for(let i = 0; i < root.isRightOf.length; i++) {
 			let child = root.isRightOf[i];
 			child.right = root.left - 1;
 			child.left = child.right - child.size.width + 1;
-			centerHorizontally(root, child);
+			if(child.segmentPlacement == SEGMENT_PLACEMENTS.CENTERED) {
+				centerHorizontally(root, child);
+			}
 			updateLocations(child);
 		}
 	}
@@ -275,47 +282,8 @@ function convertBlueprintToSegmentTree(blueprint) {
 		p++;
 	}
 	
+	console.log(connectedSegments);
 	return connectedSegments;
-	
-	function segmentIsAbove(primary, secondary) {
-		if(primary.bottom + 1 != secondary.top)
-			return false;
-		if(primary.left > secondary.right)
-			return false;
-		if(primary.right < secondary.left)
-			return false;
-		return true;
-	}
-	
-	function segmentIsBelow(primary, secondary) {
-		if(primary.top - 1 != secondary.bottom)
-			return false;
-		if(primary.left > secondary.right)
-			return false;
-		if(primary.right < secondary.left)
-			return false;
-		return true;
-	}
-	
-	function segmentIsLeftOf(primary, secondary) {
-		if(primary.right + 1 != secondary.left)
-			return false;
-		if(primary.bottom > secondary.top)
-			return false;
-		if(primary.top < secondary.bottom)
-			return false;
-		return true;
-	}
-	
-	function segmentIsRightOf(primary, secondary) {
-		if(primary.left - 1 != secondary.right)
-			return false;
-		if(primary.bottom > secondary.top)
-			return false;
-		if(primary.top < secondary.bottom)
-			return false;
-		return true;
-	}
 	
 	//insert a cellSet into collection cellSets, based on contiguous-ness rules
 	//does not assume segments will be rectangular
@@ -370,3 +338,44 @@ function convertBlueprintToSegmentTree(blueprint) {
 		return false;
 	}
 }
+
+function segmentIsAbove(primary, secondary) {
+	if(primary.bottom + 1 != secondary.top)
+		return false;
+	if(primary.left > secondary.right)
+		return false;
+	if(primary.right < secondary.left)
+		return false;
+	return true;
+}
+
+function segmentIsBelow(primary, secondary) {
+	if(primary.top - 1 != secondary.bottom)
+		return false;
+	if(primary.left > secondary.right)
+		return false;
+	if(primary.right < secondary.left)
+		return false;
+	return true;
+}
+
+function segmentIsLeftOf(primary, secondary) {
+	if(primary.right + 1 != secondary.left)
+		return false;
+	if(primary.top > secondary.bottom)
+		return false;
+	if(primary.bottom < secondary.top)
+		return false;
+	return true;
+}
+
+function segmentIsRightOf(primary, secondary) {
+	if(primary.left - 1 != secondary.right)
+		return false;
+	if(primary.top > secondary.bottom)
+		return false;
+	if(primary.bottom < secondary.top)
+		return false;
+	return true;
+}
+

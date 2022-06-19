@@ -91,6 +91,7 @@ a.width >= 0
 b.height = c.height
 c.height >= 1
 e.height = a.width
+b is center
 
 notes on intentions
 - the hook-around part can be 2 units wide, or as much wider as you want (keep increasing the length of "a")
