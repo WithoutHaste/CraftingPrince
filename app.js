@@ -78,27 +78,13 @@ function displayBlueprint(blueprintContainer, blueprint) {
 	const lines = blueprint.pattern.split('\n');
 
 	//initialize metric values
-	for(let i = 0; i < blueprint.ids.length; i++) {
-		const id = blueprint.ids[i];
-		let yMin = -1;
-		let yMax = -1;
-		for(let l = 0; l < lines.length; l++) {
-			const line = lines[l];
-			let x = line.indexOf(id);
-			if(x == -1)
-				continue;
-			if(yMin == -1)
-				yMin = l;
-			yMax = l;
-			let width = 1;
-			while(x + width < line.length && line[x + width] == id) {
-				width++;
-			}
-			blueprint.metrics[id].width = width;
-		}
-		if(yMin != -1 && yMax != -1) {
-			blueprint.metrics[id].height = yMax - yMin + 1;
-		}
+	const segmentTree = convertBlueprintToSegmentTree(blueprint);
+	for(let i = 0; i < segmentTree.length; i++) {
+		let segment = segmentTree[i];
+		if(segment.id == 'x' || segment.id == 'X')
+			continue;
+		blueprint.metrics[segment.id].width = segment.size.width;
+		blueprint.metrics[segment.id].height = segment.size.height;
 	}
 }
 

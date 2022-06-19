@@ -282,7 +282,6 @@ function convertBlueprintToSegmentTree(blueprint) {
 		p++;
 	}
 	
-	console.log(connectedSegments);
 	return connectedSegments;
 	
 	//insert a cellSet into collection cellSets, based on contiguous-ness rules
