@@ -255,22 +255,30 @@ function convertBlueprintToSegmentTree(blueprint) {
 			let foundConnection = false;
 			if(segmentIsAbove(primary, secondary)) {
 				primary.isAbove.push(secondary);
-				secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				if(segmentIsCenteredVertically(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				}
 				foundConnection = true;
 			}
 			else if(segmentIsBelow(primary, secondary)) {
 				primary.isBelow.push(secondary);
-				secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				if(segmentIsCenteredVertically(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				}
 				foundConnection = true;
 			}
 			else if(segmentIsLeftOf(primary, secondary)) {
 				primary.isLeftOf.push(secondary);
-				secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				if(segmentIsCenteredHorizontally(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				}
 				foundConnection = true;
 			}
 			else if(segmentIsRightOf(primary, secondary)) {
 				primary.isRightOf.push(secondary);
-				secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				if(segmentIsCenteredHorizontally(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				}
 				foundConnection = true;
 			}
 			if(foundConnection) {
@@ -376,5 +384,13 @@ function segmentIsRightOf(primary, secondary) {
 	if(primary.bottom < secondary.top)
 		return false;
 	return true;
+}
+
+function segmentIsCenteredVertically(primary, secondary) {
+	return (primary.left - secondary.left == secondary.right - primary.right);
+}
+
+function segmentIsCenteredHorizontally(primary, secondary) {
+	return (primary.top - secondary.top == secondary.bottom - primary.bottom);
 }
 
