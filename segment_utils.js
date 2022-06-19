@@ -63,6 +63,12 @@ function generateUpdatedBlueprintTable(blueprint) {
 			if(child.segmentPlacement == SEGMENT_PLACEMENTS.CENTERED) {
 				centerVertically(root, child);
 			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_LEFT) {
+				justifyLeft(root, child);
+			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_RIGHT) {
+				justifyRight(root, child);
+			}
 			updateLocations(child);
 		}
 		for(let i = 0; i < root.isBelow.length; i++) {
@@ -71,6 +77,12 @@ function generateUpdatedBlueprintTable(blueprint) {
 			child.top = child.bottom - child.size.height + 1;
 			if(child.segmentPlacement == SEGMENT_PLACEMENTS.CENTERED) {
 				centerVertically(root, child);
+			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_LEFT) {
+				justifyLeft(root, child);
+			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_RIGHT) {
+				justifyRight(root, child);
 			}
 			updateLocations(child);
 		}
@@ -81,6 +93,12 @@ function generateUpdatedBlueprintTable(blueprint) {
 			if(child.segmentPlacement == SEGMENT_PLACEMENTS.CENTERED) {
 				centerHorizontally(root, child);
 			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_TOP) {
+				justifyTop(root, child);
+			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_BOTTOM) {
+				justifyBottom(root, child);
+			}
 			updateLocations(child);
 		}
 		for(let i = 0; i < root.isRightOf.length; i++) {
@@ -89,6 +107,12 @@ function generateUpdatedBlueprintTable(blueprint) {
 			child.left = child.right - child.size.width + 1;
 			if(child.segmentPlacement == SEGMENT_PLACEMENTS.CENTERED) {
 				centerHorizontally(root, child);
+			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_TOP) {
+				justifyTop(root, child);
+			}
+			else if(child.segmentPlacement == SEGMENT_PLACEMENTS.JUSTIFIED_BOTTOM) {
+				justifyBottom(root, child);
 			}
 			updateLocations(child);
 		}
@@ -104,6 +128,26 @@ function generateUpdatedBlueprintTable(blueprint) {
 		let center = primary.top + Math.floor(primary.size.height / 2);
 		secondary.top = center - Math.floor(secondary.size.height / 2);
 		secondary.bottom = secondary.top + secondary.size.height - 1;
+	}
+	
+	function justifyTop(primary, secondary) {
+		secondary.top = primary.top;
+		secondary.bottom = secondary.top + secondary.size.height - 1;
+	}
+	
+	function justifyBottom(primary, secondary) {
+		secondary.bottom = primary.bottom;
+		secondary.top = secondary.bottom - secondary.size.height + 1;
+	}
+	
+	function justifyLeft(primary, secondary) {
+		secondary.left = primary.left;
+		secondary.right = secondary.left + secondary.size.width - 1;
+	}
+	
+	function justifyRight(primary, secondary) {
+		secondary.right = primary.right;
+		secondary.left = secondary.right - secondary.size.width + 1;
 	}
 	
 	function getMinRow(root) {
@@ -258,12 +302,24 @@ function convertBlueprintToSegmentTree(blueprint) {
 				if(segmentIsCenteredVertically(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				}
+				else if(segmentIsJustifiedLeft(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_LEFT;
+				}
+				else if(segmentIsJustifiedRight(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_RIGHT;
+				}
 				foundConnection = true;
 			}
 			else if(segmentIsBelow(primary, secondary)) {
 				primary.isBelow.push(secondary);
 				if(segmentIsCenteredVertically(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				}
+				else if(segmentIsJustifiedLeft(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_LEFT;
+				}
+				else if(segmentIsJustifiedRight(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_RIGHT;
 				}
 				foundConnection = true;
 			}
@@ -272,12 +328,24 @@ function convertBlueprintToSegmentTree(blueprint) {
 				if(segmentIsCenteredHorizontally(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
 				}
+				else if(segmentIsJustifiedTop(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_TOP;
+				}
+				else if(segmentIsJustifiedBottom(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_BOTTOM;
+				}
 				foundConnection = true;
 			}
 			else if(segmentIsRightOf(primary, secondary)) {
 				primary.isRightOf.push(secondary);
 				if(segmentIsCenteredHorizontally(primary, secondary)) {
 					secondary.segmentPlacement = SEGMENT_PLACEMENTS.CENTERED;
+				}
+				else if(segmentIsJustifiedTop(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_TOP;
+				}
+				else if(segmentIsJustifiedBottom(primary, secondary)) {
+					secondary.segmentPlacement = SEGMENT_PLACEMENTS.JUSTIFIED_BOTTOM;
 				}
 				foundConnection = true;
 			}
@@ -394,3 +462,18 @@ function segmentIsCenteredHorizontally(primary, secondary) {
 	return (primary.top - secondary.top == secondary.bottom - primary.bottom);
 }
 
+function segmentIsJustifiedTop(primary, secondary) {
+	return (primary.top == secondary.top && primary.bottom != secondary.bottom);
+}
+
+function segmentIsJustifiedBottom(primary, secondary) {
+	return (primary.bottom == secondary.bottom && primary.top != secondary.top);
+}
+
+function segmentIsJustifiedLeft(primary, secondary) {
+	return (primary.left == secondary.left && primary.right != secondary.right);
+}
+
+function segmentIsJustifiedRight(primary, secondary) {
+	return (primary.right == secondary.right && primary.left != secondary.left);
+}

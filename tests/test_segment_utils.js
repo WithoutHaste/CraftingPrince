@@ -629,3 +629,139 @@ QUnit.test("segment: IS CENTERED HORIZONTALLY", function( assert ) {
 	assert.false(result, "secondary leans right");
 	
 });
+
+QUnit.test("segment: IS JUSTIFIED TOP", function( assert ) {
+	let primary = {
+		top: 1,
+		bottom: 3,
+	};
+	let secondary = {
+		top: primary.top,
+		bottom: primary.bottom - 1,
+	};
+
+	let result = segmentIsJustifiedTop(primary, secondary);
+	
+	assert.true(result, "");
+	
+	//----------------------------
+
+	secondary.top = primary.top - 1;
+	result = segmentIsJustifiedTop(primary, secondary);
+	assert.false(result, "too high");
+	
+	//----------------------------
+
+	secondary.top = primary.top + 1;
+	result = segmentIsJustifiedTop(primary, secondary);
+	assert.false(result, "too low");
+	
+	//----------------------------
+
+	secondary.top = primary.top;
+	secondary.bottom = primary.bottom;
+	result = segmentIsJustifiedTop(primary, secondary);
+	assert.false(result, "centered");
+});
+
+QUnit.test("segment: IS JUSTIFIED BOTTOM", function( assert ) {
+	let primary = {
+		top: 1,
+		bottom: 3,
+	};
+	let secondary = {
+		top: primary.top + 1,
+		bottom: primary.bottom,
+	};
+
+	let result = segmentIsJustifiedBottom(primary, secondary);
+	
+	assert.true(result, "");
+	
+	//----------------------------
+
+	secondary.bottom = primary.bottom + 1;
+	result = segmentIsJustifiedBottom(primary, secondary);
+	assert.false(result, "too low");
+	
+	//----------------------------
+
+	secondary.bottom = primary.bottom - 1;
+	result = segmentIsJustifiedBottom(primary, secondary);
+	assert.false(result, "too high");
+	
+	//----------------------------
+
+	secondary.top = primary.top;
+	secondary.bottom = primary.bottom;
+	result = segmentIsJustifiedBottom(primary, secondary);
+	assert.false(result, "centered");
+});
+
+QUnit.test("segment: IS JUSTIFIED LEFT", function( assert ) {
+	let primary = {
+		left: 1,
+		right: 3,
+	};
+	let secondary = {
+		left: primary.left,
+		right: primary.right - 1,
+	};
+
+	let result = segmentIsJustifiedLeft(primary, secondary);
+	
+	assert.true(result, "");
+	
+	//----------------------------
+
+	secondary.left = primary.left - 1;
+	result = segmentIsJustifiedLeft(primary, secondary);
+	assert.false(result, "too left");
+	
+	//----------------------------
+
+	secondary.left = primary.left + 1;
+	result = segmentIsJustifiedLeft(primary, secondary);
+	assert.false(result, "too right");
+	
+	//----------------------------
+
+	secondary.left = primary.left;
+	secondary.right = primary.right;
+	result = segmentIsJustifiedLeft(primary, secondary);
+	assert.false(result, "centered");
+});
+
+QUnit.test("segment: IS JUSTIFIED RIGHT", function( assert ) {
+	let primary = {
+		left: 1,
+		right: 3,
+	};
+	let secondary = {
+		left: primary.left + 1,
+		right: primary.right,
+	};
+
+	let result = segmentIsJustifiedRight(primary, secondary);
+	
+	assert.true(result, "");
+	
+	//----------------------------
+
+	secondary.right = primary.right + 1;
+	result = segmentIsJustifiedRight(primary, secondary);
+	assert.false(result, "too left");
+	
+	//----------------------------
+
+	secondary.right = primary.right - 1;
+	result = segmentIsJustifiedRight(primary, secondary);
+	assert.false(result, "too right");
+	
+	//----------------------------
+
+	secondary.left = primary.left;
+	secondary.right = primary.right;
+	result = segmentIsJustifiedRight(primary, secondary);
+	assert.false(result, "centered");
+});
