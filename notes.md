@@ -64,4 +64,26 @@ so the combination of the three forms a sentence
 
 this implies all edits are major edits, which yeah they are when they part of a complex puzzle
 
+# materials
+
+since i can't remember the original wheel entirely
+and since my old post and my notes don't seem to contain it
+let's recreate it, or get close enough
+i'm looking for a well balance number (easily divisible) - already at 9 so let's get to 12
+so far i have 3 metals, 2 sands, 3 for clothing/weaving, 2 wooden
+
+IRON for sure 			| metal
+STEEL					| metal
+SILVER or gold			| metal, precious
+GEMS					| earth(crystal), precious
+GLASS for sure			| earth(sand)
+CERAMIC nice addition	| earth(clay)
+BONE					| from animals
+LEATHER for sure		| from animals, clothing
+CLOTH yes				| from plants or animals, woven, clothing
+REEDS still like it		| from plants, woven
+PAPER yes				| from plants
+WOOD for sure			| from plants
+
+items, for inspiration: sword, padded armor, plate mail, umbrella, cloak, boots, tea pot, cooking pot, saddle, bottle
 
