@@ -9,19 +9,31 @@
 		<script type="text/javascript" src="blueprints_royal.js"></script>
 		<script type="text/javascript" src="blueprint_utils.js"></script>
 		<script type="text/javascript" src="segment_utils.js"></script>
+		<script type="text/javascript" src="material_utils.js"></script>
 		<script type="text/javascript" src="app.js"></script>
 		<style type="text/css">
 			#blueprint-selector {
 				margin-bottom: 1em;
 			}
 			#blueprint-container {
-				display: inline-block;
+				float: left;
 				font-family: 'Courier';
+				margin-bottom: 1em;
 			}
 			#rule-container {
-				display: inline-block;
+				float: left;
 				margin-left: 2em;
 				font-family: 'Courier';
+			}
+			#workbench-container {
+				float: left;
+			}
+			#material-container {
+				float: left;
+				margin-left: 2em;
+			}
+			h3 {
+				clear: both;
 			}
 			table.blueprint, table.workbench {
 				border: 2px solid #cccccc;
@@ -40,6 +52,20 @@
 			}
 			td.workbench.tile:hover {
 				border: 1px solid goldenrod;
+			}
+			div.material {
+				display: inline-block;
+				width: 5em;
+				height: 5em;
+				font-size: 12px;
+				text-align: center;
+				line-height: 5em;
+				border: 1px solid gray;
+				margin: 0.5em;
+				cursor: pointer;
+			}
+			div.material.selected {
+				background-color: #d5ffff; /*light blue*/
 			}
 		</style>
     </head>

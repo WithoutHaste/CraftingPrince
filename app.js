@@ -30,6 +30,7 @@ function run() {
 	displayRules(ruleContainer, selectedBlueprint);
 
 	materialContainer = document.getElementById('material-container');
+	displayMaterials(materialContainer);
 }
 
 function displayBlueprint() {
@@ -213,6 +214,17 @@ function displayRules(ruleContainer, blueprint) {
 	}
 }
 
+function displayMaterials(container) {
+	container.innerHTML = "";
+	for(let i = 0; i < materialNames.length; i++) {
+		let element = document.createElement('div');
+		element.classList.add('material');
+		element.innerHTML = materialNames[i];
+		element.addEventListener('click', clickMaterial);
+		container.appendChild(element);
+	}
+}
+
 function metricOnChange(event) {
 	const input = event.target;
 	const id = input.dataset.id;
@@ -232,4 +244,11 @@ function metricOnBlur(event) {
 	const id = input.dataset.id;
 	const metric = input.dataset.metric;
 	input.value = selectedBlueprint.metrics[id][metric];
+}
+
+function clickMaterial(event) {
+	for(let i = 0; i < materialContainer.children.length; i++) {
+		materialContainer.children[i].classList.remove('selected');
+	}
+	event.target.classList.add('selected');
 }

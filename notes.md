@@ -75,15 +75,19 @@ so far i have 3 metals, 2 sands, 3 for clothing/weaving, 2 wooden
 IRON for sure 			| metal
 STEEL					| metal
 SILVER or gold			| metal, precious
-GEMS					| earth(crystal), precious
+GEMS					| earth(crystal), precious, mystic
 GLASS for sure			| earth(sand)
 CERAMIC nice addition	| earth(clay)
-BONE					| from animals
+BONE					| from animals, mystic
 LEATHER for sure		| from animals, clothing
 CLOTH yes				| from plants or animals, woven, clothing
 REEDS still like it		| from plants, woven
 PAPER yes				| from plants
 WOOD for sure			| from plants
+loops back to top
 
 items, for inspiration: sword, padded armor, plate mail, umbrella, cloak, boots, tea pot, cooking pot, saddle, bottle
 
+old notes indicate another overlapping wheel of material types, but let's leave that out for now
+
+we've sort of got four sections - metal, earth, animal, plant
