@@ -9,6 +9,7 @@ var workbenchContainer = null;
 var materialContainer = null;
 
 var selectedBlueprint = null;
+var selectedMaterial = null;
 
 function run() {
 	let selectorContainer = document.getElementById('blueprint-selector');
@@ -100,6 +101,7 @@ function updateBlueprintDisplay() {
 			}
 			else {
 				cell.classList.add('tile');
+				cell.addEventListener('click', placeMaterial);
 			}
 			row.appendChild(cell);
 		}
@@ -220,7 +222,8 @@ function displayMaterials(container) {
 		let element = document.createElement('div');
 		element.classList.add('material');
 		element.innerHTML = materialNames[i];
-		element.addEventListener('click', clickMaterial);
+		element.dataset.name = materialNames[i];
+		element.addEventListener('click', selectMaterial);
 		container.appendChild(element);
 	}
 }
@@ -246,9 +249,17 @@ function metricOnBlur(event) {
 	input.value = selectedBlueprint.metrics[id][metric];
 }
 
-function clickMaterial(event) {
+function selectMaterial(event) {
 	for(let i = 0; i < materialContainer.children.length; i++) {
 		materialContainer.children[i].classList.remove('selected');
 	}
 	event.target.classList.add('selected');
+	selectedMaterial = event.target.dataset.name;
+}
+
+function placeMaterial(event) {
+	if(selectedMaterial == null)
+		return;
+	var cell = event.target;
+	cell.innerHTML = selectedMaterial;
 }
