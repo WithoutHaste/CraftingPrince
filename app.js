@@ -5,6 +5,8 @@ const isInteger = /^\d+$/;
 var blueprintSelector = null;
 var blueprintContainer = null;
 var ruleContainer = null;
+var workbenchContainer = null;
+var materialContainer = null;
 
 var selectedBlueprint = null;
 
@@ -21,10 +23,27 @@ function run() {
 	parseBlueprint(selectedBlueprint);
 
 	blueprintContainer = document.getElementById('blueprint-container');
-	displayBlueprint(blueprintContainer, selectedBlueprint);
+	workbenchContainer = document.getElementById('workbench-container');
+	displayBlueprint();
 	
 	ruleContainer = document.getElementById('rule-container');
 	displayRules(ruleContainer, selectedBlueprint);
+
+	materialContainer = document.getElementById('material-container');
+}
+
+function displayBlueprint() {
+	//initialize metric values
+	const segmentTree = convertBlueprintToSegmentTree(selectedBlueprint);
+	for(let i = 0; i < segmentTree.length; i++) {
+		let segment = segmentTree[i];
+		if(segment.id == 'x' || segment.id == 'X')
+			continue;
+		selectedBlueprint.metrics[segment.id].width = segment.size.width;
+		selectedBlueprint.metrics[segment.id].height = segment.size.height;
+	}
+
+	updateBlueprintDisplay();
 }
 
 function fillBlueprintSelector() {
@@ -54,34 +73,40 @@ function resetSelectedBlueprint() {
 	parseBlueprint(selectedBlueprint);
 
 	blueprintContainer.innerHTML = "";
+	workbenchContainer.innerHTML = "";
 	displayBlueprint(blueprintContainer, selectedBlueprint);
 
 	ruleContainer.innerHTML = "";
 	displayRules(ruleContainer, selectedBlueprint);
 }
 
-function displayBlueprint(blueprintContainer, blueprint) {
-	blueprintContainer.innerHTML = "";
-	blueprintContainer.style.display = "inline-block";
-	const table = generateDefaultBlueprintDisplay(blueprint);
-	blueprintContainer.appendChild(table);
-	const lines = blueprint.pattern.split('\n');
-
-	//initialize metric values
-	const segmentTree = convertBlueprintToSegmentTree(blueprint);
-	for(let i = 0; i < segmentTree.length; i++) {
-		let segment = segmentTree[i];
-		if(segment.id == 'x' || segment.id == 'X')
-			continue;
-		blueprint.metrics[segment.id].width = segment.size.width;
-		blueprint.metrics[segment.id].height = segment.size.height;
-	}
-}
-
 function updateBlueprintDisplay() {
-	const table = generateUpdatedBlueprintTable(selectedBlueprint);
+	const blueprintTable = generateUpdatedBlueprintTable(selectedBlueprint);
 	blueprintContainer.innerHTML = "";
-	blueprintContainer.appendChild(table);
+	blueprintContainer.appendChild(blueprintTable);
+	
+	const workbenchTable = document.createElement('table');
+	workbenchTable.classList.add('workbench');
+	for(let r = 0; r < blueprintTable.children.length; r++) {
+		const templateRow = blueprintTable.children[r];
+		const row = document.createElement('tr');
+		for(let c = 0; c < templateRow.children.length; c++) {
+			const templateCell = templateRow.children[c];
+			const cell = document.createElement('td');
+			cell.classList.add('workbench');
+			if(templateCell.classList.contains('empty')) {
+				cell.classList.add('empty');
+			}
+			else {
+				cell.classList.add('tile');
+			}
+			row.appendChild(cell);
+		}
+		workbenchTable.appendChild(row);
+	}
+	workbenchContainer.innerHTML = "";
+	workbenchContainer.appendChild(workbenchTable);
+	
 }
 
 //returns container element

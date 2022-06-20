@@ -23,11 +23,23 @@
 				margin-left: 2em;
 				font-family: 'Courier';
 			}
-			table.blueprint {
+			table.blueprint, table.workbench {
+				border: 2px solid #cccccc;
 				border-collapse: collapse;
 			}
-			td.blueprint.empty {
+			td.blueprint.empty, td.workbench.empty {
 				background-color: #cccccc;
+			}
+			td.workbench {
+				width: 2em;
+				height: 2em;
+			}
+			td.workbench.tile {
+				cursor: pointer;
+				border: 1px solid #aaaaaa;
+			}
+			td.workbench.tile:hover {
+				border: 1px solid goldenrod;
 			}
 		</style>
     </head>
@@ -41,6 +53,9 @@
 			<div id='rule-container'></div>
 		</div>
 		<h3>Step 3: arrange materials</h3>
-		<div id='workbench-container'></div>
+		<div>
+			<div id='workbench-container'></div>
+			<div id='material-container'></div>
+		</div>
     </body>
 </html>
