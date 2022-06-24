@@ -24,9 +24,22 @@ players of the craft-test system are in "creative mode"
 
 rule ideas
 - if the number of tiles in the item is odd, all fire-effects are nullified
+- if the number of tiles in the item is sphenic, 10% weight reduction, or -50% damage on attacks
 - if such-and-such pattern appears in the item, it bears curse:sleep/fear/whatever (affecting the bearer)
 - if the item includes a tile of each of the 12 material types, it gains <effect>
 - if the item is made up entirely of 1 material type, it gains <effect>
+- an item built from exactly 3 materials, in this ratio 1/4, 1/4, 1/2 - gest +2% chance of a Critical Hit
+- if all tiles of material A are north of all tiles of material B in the design, gain +10 lightning resistance
+
+rule idea
+- patterns of material
+RRxxx
+xxxRR
+- let's say this is the pattern of RED tiles, anywhere it appears in your design provides +5 Fire Damage on Attacks
+- the center vertical "x" part can have width >= 1
+- an R tile counted into one instance of "+5 Fire Damage" cannot be counted into another instance of it
+  - user does not decide, game will have a deterministic calculation, try to maximize the effect
+
 
 # blueprints folder
 
