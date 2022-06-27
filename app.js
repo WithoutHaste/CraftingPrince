@@ -255,9 +255,10 @@ function displayMaterials(container) {
 	container.appendChild(table);
 	
 	function createCell(materialName) {
+		let unit = ''; //'$';
 		let cell = document.createElement('td');
 		cell.classList.add('material');
-		cell.innerHTML = materialName;
+		cell.innerHTML = `${materialName}<br/>${unit}${pricing[materialName]}`;
 		cell.dataset.name = materialName;
 		cell.addEventListener('click', selectMaterial);
 		return cell;
