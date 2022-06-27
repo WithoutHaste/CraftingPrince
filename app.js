@@ -7,6 +7,8 @@ var blueprintContainer = null;
 var ruleContainer = null;
 var workbenchContainer = null;
 var materialContainer = null;
+var totalsContainer = null;
+var totalCostContainer = null;
 
 var selectedBlueprint = null;
 var selectedMaterial = null;
@@ -32,6 +34,9 @@ function run() {
 
 	materialContainer = document.getElementById('material-container');
 	displayMaterials(materialContainer);
+
+	totalsContainer = document.getElementById('totals-container');
+	initTotals();
 }
 
 function displayBlueprint() {
@@ -265,6 +270,19 @@ function displayMaterials(container) {
 	}
 }
 
+function initTotals() {
+	const container = totalsContainer;
+	container.innerHTML = '';
+	
+	let costLabel = document.createElement('span');
+	costLabel.innerHTML = 'Item Cost: ';
+	container.appendChild(costLabel);
+
+	totalCostContainer = document.createElement('span');
+	totalCostContainer.innerHTML = '0';
+	container.appendChild(totalCostContainer);
+}
+
 function metricOnChange(event) {
 	const input = event.target;
 	const id = input.dataset.id;
@@ -300,4 +318,18 @@ function placeMaterial(event) {
 		return;
 	var cell = event.target;
 	cell.innerHTML = selectedMaterial;
+	cell.dataset.name = selectedMaterial;
+	updateTotals();
+}
+
+function updateTotals() {
+	let totalCost = 0;
+	let list = workbenchContainer.getElementsByClassName('tile');
+	for(let i = 0; i < list.length; i++) {
+		let tile = list[i];
+		if('name' in tile.dataset) {
+			totalCost += pricing[tile.dataset.name];
+		}
+	}
+	totalCostContainer.innerHTML = totalCost;
 }
