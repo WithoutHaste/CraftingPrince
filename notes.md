@@ -40,6 +40,21 @@ xxxRR
 - an R tile counted into one instance of "+5 Fire Damage" cannot be counted into another instance of it
   - user does not decide, game will have a deterministic calculation, try to maximize the effect
 
+effects notes
+- attack/defense progressive - iteration amount iterates
+- in patterns, "x is not SILVER" means x can be another material or x can be an empty space
+- unless stated otherwise, tiles can count towards multiple effects
+
+
+materials layout consider
+- dark/light versions of each material
+- dark is much cheaper
+- dark X can transition to light X
+- light X can transition to light X-1 and light X+1 (around the circle)
+- each blueprint will have an anchor material that it must include a dark tile of
+  - after that, as long as there is a "move left/right/up/down" valid transition that reaches each other tile, then that is valid
+
+
 
 # blueprints folder
 
@@ -71,7 +86,7 @@ blueprint collections are named with Adjectives
 
 pricing is named with Nouns
 
-and magical rules are named with Verbs
+and effects are named with Verbs
 
 so the combination of the three forms a sentence
 
@@ -98,6 +113,8 @@ REEDS still like it		| from plants, woven
 PAPER yes				| from plants
 WOOD for sure			| from plants
 loops back to top
+
+BRONZE ? WOOD BRONZE IRON SILVER ?
 
 items, for inspiration: sword, padded armor, plate mail, umbrella, cloak, boots, tea pot, cooking pot, saddle, bottle
 
