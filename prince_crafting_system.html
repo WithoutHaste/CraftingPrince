@@ -10,6 +10,7 @@
 		<script type="text/javascript" src="blueprint_utils.js"></script>
 		<script type="text/javascript" src="segment_utils.js"></script>
 		<script type="text/javascript" src="material_utils.js"></script>
+		<script type="text/javascript" src="pricing_oak.js"></script>
 		<script type="text/javascript" src="app.js"></script>
 		<style type="text/css">
 			#blueprint-selector {
@@ -45,6 +46,9 @@
 			td.workbench {
 				width: 3em;
 				height: 3em;
+				font-size: 10px;
+				text-align: center;
+				line-height: 3em;
 			}
 			td.workbench.tile {
 				cursor: pointer;
@@ -53,18 +57,20 @@
 			td.workbench.tile:hover {
 				background-color: #d5ffff; /*light blue*/
 			}
-			div.material {
-				display: inline-block;
+			table.material {
+				border-spacing: 0.5em;
+				border-collapse: separate;
+			}
+			td.material {
 				width: 5em;
 				height: 5em;
 				font-size: 12px;
 				text-align: center;
 				line-height: 5em;
 				border: 1px solid gray;
-				margin: 0.5em;
 				cursor: pointer;
 			}
-			div.material.selected {
+			td.material.selected {
 				background-color: #d5ffff; /*light blue*/
 			}
 		</style>

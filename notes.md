@@ -69,9 +69,9 @@ support versioning of blueprint collections, pricing/availability of parts, and 
 
 blueprint collections are named with Adjectives
 
-magical rules are named with Nouns
+pricing is named with Nouns
 
-and pricing is named with Verbs
+and magical rules are named with Verbs
 
 so the combination of the three forms a sentence
 

@@ -216,15 +216,51 @@ function displayRules(ruleContainer, blueprint) {
 	}
 }
 
+//hard-coded for 12 materials
 function displayMaterials(container) {
 	container.innerHTML = "";
-	for(let i = 0; i < materialNames.length; i++) {
-		let element = document.createElement('div');
-		element.classList.add('material');
-		element.innerHTML = materialNames[i];
-		element.dataset.name = materialNames[i];
-		element.addEventListener('click', selectMaterial);
-		container.appendChild(element);
+	let table = document.createElement('table');
+	table.classList.add('material');
+	
+	let row = document.createElement('tr');
+	row.appendChild(createCell(materialNames[0]));
+	row.appendChild(createCell(materialNames[1]));
+	row.appendChild(createCell(materialNames[2]));
+	table.appendChild(row);
+	
+	row = document.createElement('tr');
+	row.appendChild(createCell(materialNames[11]));
+	row.appendChild(document.createElement('td'));
+	row.appendChild(createCell(materialNames[3]));
+	table.appendChild(row);
+	
+	row = document.createElement('tr');
+	row.appendChild(createCell(materialNames[10]));
+	row.appendChild(document.createElement('td'));
+	row.appendChild(createCell(materialNames[4]));
+	table.appendChild(row);
+	
+	row = document.createElement('tr');
+	row.appendChild(createCell(materialNames[9]));
+	row.appendChild(document.createElement('td'));
+	row.appendChild(createCell(materialNames[5]));
+	table.appendChild(row);
+	
+	row = document.createElement('tr');
+	row.appendChild(createCell(materialNames[8]));
+	row.appendChild(createCell(materialNames[7]));
+	row.appendChild(createCell(materialNames[6]));
+	table.appendChild(row);
+	
+	container.appendChild(table);
+	
+	function createCell(materialName) {
+		let cell = document.createElement('td');
+		cell.classList.add('material');
+		cell.innerHTML = materialName;
+		cell.dataset.name = materialName;
+		cell.addEventListener('click', selectMaterial);
+		return cell;
 	}
 }
 
@@ -250,8 +286,9 @@ function metricOnBlur(event) {
 }
 
 function selectMaterial(event) {
-	for(let i = 0; i < materialContainer.children.length; i++) {
-		materialContainer.children[i].classList.remove('selected');
+	let list = materialContainer.getElementsByClassName('material');
+	for(let i = 0; i < list.length; i++) {
+		list[i].classList.remove('selected');
 	}
 	event.target.classList.add('selected');
 	selectedMaterial = event.target.dataset.name;
