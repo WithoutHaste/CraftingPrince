@@ -44,6 +44,7 @@ effects notes
 - attack/defense progressive - iteration amount iterates
 - in patterns, "x is not SILVER" means x can be another material or x can be an empty space
 - unless stated otherwise, tiles can count towards multiple effects
+- i think i will not generalize rotation and mirroring rules to always apply, let it be set per effect
 
 
 materials layout consider

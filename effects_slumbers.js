@@ -30,6 +30,63 @@ const effects = [
 	'WOOD: defense +1',
 	
 	`
+IxI
+xxx
+IxI
+
+I is IRON
+x is not IRON
+stacks
+each I can be counted only once
+
+effect: attack +1 fire
+	`,
+	`
+Sxx
+xSx
+SxS
+
+S is STEEL
+x is not STEEL
+stacks
+each S can be counted only once
+
+effect: attack +1 divine fire
+	`,
+	`
+Ixx
+III
+xxI
+
+I is IRON
+x is not IRON
+stacks
+
+effect: defense +1
+	`,
+	`
+Sxx
+xSx
+SxS
+
+S is STEEL
+x is not STEEL
+stacks
+each S can be counted only once
+
+effect: attack +1 divine fire
+	`,
+	`
+SxSS
+SxSx
+SSSx
+
+S is STEEL
+x is not STEEL
+
+effect: defense +(1 * length of repeating pattern horizontal) 
+	`,
+	`
 S
 x
 S
@@ -41,6 +98,19 @@ can rotate 90 degrees
 each S can be counted only once
 
 effect: attack +1 poison against dark creatures
+	`,
+	`
+xxSS
+xxxS
+Sxxx
+
+S is SILVER
+x is not SILVER
+stacks
+can rotate 90 180 270 degrees
+each S can be counted only once
+
+effect: defense +1 elemental magic
 	`,
 	`
 Gx
@@ -55,9 +125,21 @@ each G can be counted only once
 effect: all magical effects +1
 	`,
 	`
- Gxx
- xGx
- xxG
+Gx
+GG
+
+G is GEMS
+X is not GEMS
+stacks
+can rotate 90 180 270 degrees
+each G can be counted only once
+
+effect: all magical effects +1
+	`,
+	`
+Gxx
+xGx
+xxG
 
 G is GLASS
 x is not GLASS
@@ -65,6 +147,27 @@ stacks
 can rotate 90 degrees
 
 effect: attack +1 lightning
+	`,
+	`
+GG
+
+G is GLASS
+stacks
+can rotate 90 degrees
+
+effect: defense -2
+	`,
+	`
+Cxx
+CxC
+CCC
+
+C is CERAMIC
+stacks
+can rotate 180 degrees
+each C can be counted only once
+
+effect: defense +1
 	`,
 	`
 BxB
@@ -93,4 +196,36 @@ can rotate 90 degrees
 effect: defense blocks life drain
 notes: big because intended for clothing/armor
 	`,
+	`
+xLx
+xLx
+LLL
+LLL
+xLx
+xLx
+
+L is LEATHER
+x is all one material
+stacks
+each L can be counted only once
+	
+effect: attack +0.5
+	`,
+	`
+LLxLLxLLxLL
+
+L is LEATHER
+x is not LEATHER
+x is all one material
+can rotate 90 degrees
+stacks
+each L can be counted only once
+	
+effect: defense +2
+	`,
+	//'CLOTH: weight +0.5',
+	//'REEDS: weight +0.3',
+	//'PAPER: weight +0.7',
+	//'WOOD: weight +1',
+
 ];
