@@ -9,3 +9,12 @@ function generateMaterialTypes() {
 	}
 	return result;
 }
+
+//returns a new mapping of MATERIAL to integer, initialized to 0
+function generateMaterialCounter() {
+	var result = {};
+	for(let i = 0; i < materialNames.length; i++) {
+		result[materialNames[i]] = 0;
+	}
+	return result;
+}

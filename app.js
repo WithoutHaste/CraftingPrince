@@ -359,19 +359,27 @@ function placeMaterial(event) {
 }
 
 function updateTotals() {
-	let totalCost = 0;
-	let totalWeight = 0;
-	let totalAttack = 0;
-	let totalDefense = 0;
-	let list = workbenchContainer.getElementsByClassName('tile');
+	const list = workbenchContainer.getElementsByClassName('tile');
+
+	let materialCounter = generateMaterialCounter();
 	for(let i = 0; i < list.length; i++) {
 		let tile = list[i];
 		if(!('name' in tile.dataset))
 			continue;
-		totalCost += pricing[tile.dataset.name];
-		totalWeight += sumEffects(EFFECT_TYPES.WEIGHT, tile.dataset.name);
-		totalAttack += sumEffects(EFFECT_TYPES.ATTACK, tile.dataset.name);
-		totalDefense += sumEffects(EFFECT_TYPES.DEFENSE, tile.dataset.name);
+		materialCounter[tile.dataset.name]++;
+	}
+	
+	let totalCost = 0;
+	let totalWeight = 0;
+	let totalAttack = 0;
+	let totalDefense = 0;
+	for(let i = 0; i < materialNames.length; i++) {
+		let name = materialNames[i];
+		const count = materialCounter[name];
+		totalCost += count * pricing[name];
+		totalWeight += count * sumEffects(EFFECT_TYPES.WEIGHT, name);
+		totalAttack += count * sumEffects(EFFECT_TYPES.ATTACK, name);
+		totalDefense += count * sumEffects(EFFECT_TYPES.DEFENSE, name);
 	}
 	totalCostContainer.innerHTML = totalCost.toFixed(2);
 	totalWeightContainer.innerHTML = totalWeight.toFixed(2);
