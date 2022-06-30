@@ -9,6 +9,7 @@ var workbenchContainer = null;
 var materialContainer = null;
 var totalsContainer = null;
 var totalCostContainer = null;
+var totalWeightContainer = null;
 
 var selectedBlueprint = null;
 var selectedMaterial = null;
@@ -34,6 +35,9 @@ function run() {
 
 	materialContainer = document.getElementById('material-container');
 	displayMaterials(materialContainer);
+	
+	parseEffects(effects_raw);
+	console.log(effects);
 
 	totalsContainer = document.getElementById('totals-container');
 	initTotals();
@@ -274,6 +278,8 @@ function initTotals() {
 	const container = totalsContainer;
 	container.innerHTML = '';
 	
+	var br = document.createElement('br');
+	
 	let costLabel = document.createElement('span');
 	costLabel.innerHTML = 'Item Cost: ';
 	container.appendChild(costLabel);
@@ -281,6 +287,16 @@ function initTotals() {
 	totalCostContainer = document.createElement('span');
 	totalCostContainer.innerHTML = '0';
 	container.appendChild(totalCostContainer);
+	container.appendChild(br.cloneNode());
+	
+	let weightLabel = document.createElement('span');
+	weightLabel.innerHTML = 'Item Weight: ';
+	container.appendChild(weightLabel);
+
+	totalWeightContainer = document.createElement('span');
+	totalWeightContainer.innerHTML = '0';
+	container.appendChild(totalWeightContainer);
+	container.appendChild(br.cloneNode());
 }
 
 function metricOnChange(event) {
@@ -324,12 +340,15 @@ function placeMaterial(event) {
 
 function updateTotals() {
 	let totalCost = 0;
+	let totalWeight = 0;
 	let list = workbenchContainer.getElementsByClassName('tile');
 	for(let i = 0; i < list.length; i++) {
 		let tile = list[i];
-		if('name' in tile.dataset) {
-			totalCost += pricing[tile.dataset.name];
-		}
+		if(!('name' in tile.dataset))
+			continue;
+		totalCost += pricing[tile.dataset.name];
+		totalWeight += sumWeightEffects(tile.dataset.name);
 	}
 	totalCostContainer.innerHTML = totalCost;
+	totalWeightContainer.innerHTML = totalWeight.toFixed(2);
 }

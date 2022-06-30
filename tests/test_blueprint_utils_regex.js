@@ -31,6 +31,16 @@ QUnit.test("regex: IS WHITESPACE", function( assert ) {
 
 	result = isWhitespace.test("\t\n");
 	assert.true(result, "tab endline");
+	
+	//----------------------------
+
+	result = isWhitespace.test("a");
+	assert.false(result, "char");
+	
+	//----------------------------
+
+	result = isWhitespace.test("1");
+	assert.false(result, "digit");
 });
 
 QUnit.test("regex: IS MULTIPLE", function( assert ) {

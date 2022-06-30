@@ -54,6 +54,9 @@ materials layout consider
 - light X can transition to light X-1 and light X+1 (around the circle)
 - each blueprint will have an anchor material that it must include a dark tile of
   - after that, as long as there is a "move left/right/up/down" valid transition that reaches each other tile, then that is valid
+  
+UI needs to make it easy to see all these pattern rules
+they are really hard to read in the text file
 
 
 

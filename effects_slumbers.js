@@ -1,7 +1,7 @@
 //Version: slumbers
 //estimate weights in pounds/lbs
 
-const effects = [
+const effects_raw = [
 	'IRON: weight +2',
 	'STEEL: weight +1',
 	'SILVER: weight +1',
@@ -223,8 +223,77 @@ each L can be counted only once
 	
 effect: defense +2
 	`,
-	//'CLOTH: weight +0.5',
-	//'REEDS: weight +0.3',
+	`
+LLxLLxLLxLL
+
+L is LEATHER
+x is not LEATHER
+x is all one material
+can rotate 90 degrees
+stacks
+each L can be counted only once
+	
+effect: defense +2
+	`,
+	`
+CCxCCyCCxCC
+
+C is CLOTH
+x and y are different materials
+stacks
+each C can be counted only once
+	
+effect: defense +0.2
+	`,
+	`
+Cxyyy
+xCxyy
+yxxxy
+yyxCx
+yyyxC
+
+C is CLOTH
+x is not CLOTH
+stacks
+each C can be counted only once
+	
+effect: defense +1 against magic
+	`,
+	`
+CCxCCyCCxCC
+
+C is CLOTH
+x and y are different materials
+stacks
+each C can be counted only once
+	
+effect: defense +0.2
+	`,
+	`
+RR
+xR
+
+R is REEDS
+stacks
+can rotate 180 degrees
+each R can be counted only once
+	
+effect: weight -0.1
+	`,
+	`
+xxRRR
+RxxxR
+RxxxR
+RRRxx
+
+R is REEDS
+x is not REEDS
+stacks
+can rotate 90 degrees
+each R can be counted only once
+	
+effect: effect cooldown time -0.3
+	`,
 	//'PAPER: weight +0.7',
 	//'WOOD: weight +1',
 
