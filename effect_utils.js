@@ -7,7 +7,7 @@ const EFFECT_TYPES = {
 };
 const isWeight = /^(\w+)\: weight ([\+\-])((\d+\.)?\d+)$/;
 const isAttack = /^(\w+)\: attack ([\+\-])((\d+\.)?\d+)$/;
-//const isDefense = /^(\w+)\: defense ([\+\-])((\d+\.)?\d+)(.*)$/;
+const isDefense = /^(\w+)\: defense ([\+\-])((\d+\.)?\d+)(.*)$/;
 
 var effects = [];
 
@@ -69,6 +69,15 @@ function parseEffect(raw) {
 	matches = raw.match(isAttack);
 	if(matches != null) {
 		effect.type = EFFECT_TYPES.ATTACK;
+		effect.material = matches[1];
+		effect.isPlus = (matches[2] == '+');
+		effect.amount = parseFloat(matches[3]);
+		return effect;
+	}
+
+	matches = raw.match(isDefense);
+	if(matches != null) {
+		effect.type = EFFECT_TYPES.DEFENSE;
 		effect.material = matches[1];
 		effect.isPlus = (matches[2] == '+');
 		effect.amount = parseFloat(matches[3]);
