@@ -10,6 +10,7 @@ var materialContainer = null;
 var totalsContainer = null;
 var totalCostContainer = null;
 var totalWeightContainer = null;
+var totalAttackContainer = null;
 
 var selectedBlueprint = null;
 var selectedMaterial = null;
@@ -297,6 +298,15 @@ function initTotals() {
 	totalWeightContainer.innerHTML = '0';
 	container.appendChild(totalWeightContainer);
 	container.appendChild(br.cloneNode());
+	
+	let attackLabel = document.createElement('span');
+	attackLabel.innerHTML = 'Item Attack: ';
+	container.appendChild(attackLabel);
+
+	totalAttackContainer = document.createElement('span');
+	totalAttackContainer.innerHTML = '0';
+	container.appendChild(totalAttackContainer);
+	container.appendChild(br.cloneNode());
 }
 
 function metricOnChange(event) {
@@ -341,14 +351,17 @@ function placeMaterial(event) {
 function updateTotals() {
 	let totalCost = 0;
 	let totalWeight = 0;
+	let totalAttack = 0;
 	let list = workbenchContainer.getElementsByClassName('tile');
 	for(let i = 0; i < list.length; i++) {
 		let tile = list[i];
 		if(!('name' in tile.dataset))
 			continue;
 		totalCost += pricing[tile.dataset.name];
-		totalWeight += sumWeightEffects(tile.dataset.name);
+		totalWeight += sumEffects(EFFECT_TYPES.WEIGHT, tile.dataset.name);
+		totalAttack += sumEffects(EFFECT_TYPES.ATTACK, tile.dataset.name);
 	}
-	totalCostContainer.innerHTML = totalCost;
+	totalCostContainer.innerHTML = totalCost.toFixed(2);
 	totalWeightContainer.innerHTML = totalWeight.toFixed(2);
+	totalAttackContainer.innerHTML = totalAttack.toFixed(2);
 }

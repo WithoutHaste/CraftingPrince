@@ -11,8 +11,8 @@ const isAttack = /^(\w+)\: attack ([\+\-])((\d+\.)?\d+)$/;
 
 var effects = [];
 
-function sumWeightEffects(material) {
-	let weightEffects = getEffectsByTypeAndMaterial(EFFECT_TYPES.WEIGHT, material);
+function sumEffects(type, material) {
+	let weightEffects = getEffectsByTypeAndMaterial(type, material);
 	let total = 0;
 	for(let i = 0; i < weightEffects.length; i++) {
 		let effect = weightEffects[i];
@@ -60,6 +60,15 @@ function parseEffect(raw) {
 	let matches = raw.match(isWeight);
 	if(matches != null) {
 		effect.type = EFFECT_TYPES.WEIGHT;
+		effect.material = matches[1];
+		effect.isPlus = (matches[2] == '+');
+		effect.amount = parseFloat(matches[3]);
+		return effect;
+	}
+
+	matches = raw.match(isAttack);
+	if(matches != null) {
+		effect.type = EFFECT_TYPES.ATTACK;
 		effect.material = matches[1];
 		effect.isPlus = (matches[2] == '+');
 		effect.amount = parseFloat(matches[3]);
