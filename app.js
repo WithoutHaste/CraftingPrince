@@ -39,7 +39,6 @@ function run() {
 	displayMaterials(materialContainer);
 	
 	parseEffects(effects_raw);
-	console.log(effects);
 
 	totalsContainer = document.getElementById('totals-container');
 	initTotals();
@@ -269,7 +268,7 @@ function displayMaterials(container) {
 		let unit = ''; //'$';
 		let cell = document.createElement('td');
 		cell.classList.add('material');
-		cell.innerHTML = `${materialName}<br/>${unit}${pricing[materialName]}`;
+		cell.innerHTML = `${materialName}<br/>${unit}${pricing[materialName].solid}</br>~${pricing[materialName].transition}`;
 		cell.dataset.name = materialName;
 		cell.addEventListener('click', selectMaterial);
 		return cell;
@@ -353,36 +352,30 @@ function placeMaterial(event) {
 	if(selectedMaterial == null)
 		return;
 	var cell = event.target;
-	cell.innerHTML = selectedMaterial;
+	cell.innerHTML = materials[selectedMaterial].abbr;
 	cell.dataset.name = selectedMaterial;
 	updateTotals();
 }
 
 function updateTotals() {
-	const list = workbenchContainer.getElementsByClassName('tile');
-
-	let materialCounter = generateMaterialCounter();
-	for(let i = 0; i < list.length; i++) {
-		let tile = list[i];
-		if(!('name' in tile.dataset))
-			continue;
-		materialCounter[tile.dataset.name]++;
+	var layout = [];
+	const table = workbenchContainer.getElementsByTagName('table')[0];
+	for(let r = 0; r < table.children.length; r++) {
+		let tableRow = table.children[r];
+		let layoutRow = [];
+		for(let c = 0; c < tableRow.children.length; c++) {
+			let tableCell = tableRow.children[c];
+			let layoutCell = null;
+			if("name" in tableCell.dataset) {
+				layoutCell = tableCell.dataset.name;
+			}
+			layoutRow.push(layoutCell);
+		}
+		layout.push(layoutRow);
 	}
-	
-	let totalCost = 0;
-	let totalWeight = 0;
-	let totalAttack = 0;
-	let totalDefense = 0;
-	for(let i = 0; i < materialNames.length; i++) {
-		let name = materialNames[i];
-		const count = materialCounter[name];
-		totalCost += count * pricing[name];
-		totalWeight += count * sumEffects(EFFECT_TYPES.WEIGHT, name);
-		totalAttack += count * sumEffects(EFFECT_TYPES.ATTACK, name);
-		totalDefense += count * sumEffects(EFFECT_TYPES.DEFENSE, name);
-	}
-	totalCostContainer.innerHTML = totalCost.toFixed(2);
-	totalWeightContainer.innerHTML = totalWeight.toFixed(2);
-	totalAttackContainer.innerHTML = totalAttack.toFixed(2);
-	totalDefenseContainer.innerHTML = totalDefense.toFixed(2);
+	const effectTotals = calculateEffectTotals(layout);
+	totalCostContainer.innerHTML = effectTotals.totalCost.toFixed(2);
+	totalWeightContainer.innerHTML = effectTotals.totalWeight.toFixed(2);
+	totalAttackContainer.innerHTML = effectTotals.totalAttack.toFixed(2);
+	totalDefenseContainer.innerHTML = effectTotals.totalDefense.toFixed(2);
 }

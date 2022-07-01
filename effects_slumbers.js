@@ -15,9 +15,9 @@ const effects_raw = [
 	'PAPER: weight +0.7',
 	'WOOD: weight +1',
 
-	'IRON: attack +2',
-	'STEEL: attack +4',
-	'GLASS: attack +1',
+	'IRON: attack +2 progressive +1 on odd', //+2+2+3+3+4+4+5
+	'STEEL: attack +4 on odd progressive +1', //+4+0+5+0+6+0+7
+	'GLASS: attack +1 progressive +0.3',
 	'BONE: attack +1',
 	'WOOD: attack +2',
 
@@ -25,10 +25,27 @@ const effects_raw = [
 	'STEEL: defense +2 progressive +1',
 	'CERAMIC: defense +3',
 	'LEATHER: defense +2 progessive +0.5',
-	'CLOTH: defense +0.3',
-	'PAPER: defense +0.3 progressive +0.3',
-	'WOOD: defense +1',
+	'REEDS: defense -1 progressive -0.5', //starts bad and gets worse
+	'PAPER: defense -3 progressive +1', //starts bad can build to great
+	'WOOD: defense +1 progressive +0.1 progressive +0.1', //+1+1.1+1.3+1.6+2+2.5+3.1+3.8+4.6
 	
+	'IRON: count sphenic -25% attack',
+	'STEEL: count sphenic -50% attack',
+	'SILVER: count even -25% attack',
+	'GEMS: count lucky +100% attack',
+	'GLASS: count happy -50% magic attack',
+	'CERAMIC: count > 0 and < leather -25% defense',
+	'item is all BONE +300% magic defense',
+	'LEATHER: count > metal +25% defense',
+	'CLOTH: count multiple of 3 +10% defense',
+	'REEDS: count > 0 +10% mental defense',
+	'PAPER.count > 0 and == REEDS.count weight -90%',
+	'WOOD: count prime -25% attack',
+
+	'GEMS: contiguous +10% magic defense',
+	'LEATHER: not contiguous +10% fire attack', //any tile not contiguous with other leather in item
+	'PAPER: none contiguous -1 per mana use', //each paper tile touching no other paper tile
+
 	`
 IxI
 xxx

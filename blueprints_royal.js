@@ -26,6 +26,7 @@ A.width is odd
 B.height >= 3
 C.width = A.width
 C is center
+anchor metal A top center
     `
 	},
 	{
@@ -68,11 +69,7 @@ d.width < e.width
 d.width >= 1
 e.width is prime
 A is center
-
-notes on intentions
-- add as many "pointy" sections as you want, but the whole polearm cannot become too long
-- when you edit A.height or C.height, the other auto-updates such that rule #1 is still true
-- the pointy bits hanging off of "A" get duplicated when "A" does
+anchor wood x bottom
 		`
 	},
 	{
@@ -115,6 +112,26 @@ notes on intentions
 a is all one type of material
 a.width >= 1
 b.height >= 2
+anchor cloth X
+		`
+	},
+	{
+		name: "cauldron",
+		raw: `
+      gg     
+ fffffDDfffff   
+ o          o	
+ BBB      BBB
+ BBB      BBB
+ eeee    eeee
+  ccccAAcccc
+    ddAAdd
+
+A.width >= 1
+D.width = A.width
+B.height >= 2
+A.width is even
+o is empty
 		`
 	},
 ];

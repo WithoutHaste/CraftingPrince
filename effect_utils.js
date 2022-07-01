@@ -5,11 +5,47 @@ const EFFECT_TYPES = {
 	DEFENSE: "DEFENSE",
 	PATTERN: "PATTERN",
 };
+const EFFECT_TOTALS = {
+	NONE: "NONE",
+	WEIGHT: "WEIGHT",
+	ATTACK: "ATTACK",
+	DEFENSE: "DEFENSE",
+};
 const isWeight = /^(\w+)\: weight ([\+\-])((\d+\.)?\d+)$/;
 const isAttack = /^(\w+)\: attack ([\+\-])((\d+\.)?\d+)$/;
 const isDefense = /^(\w+)\: defense ([\+\-])((\d+\.)?\d+)(.*)$/;
 
 var effects = [];
+
+//given a 2D array (rows of cells) of empty/material cells, returns an object with all the effect totals
+function calculateEffectTotals(layout) {
+	let materialCounter = generateMaterialCounter();
+	for(let r = 0; r < layout.length; r++) {
+		const row = layout[r];
+		for(let c = 0; c < row.length; c++) {
+			const name = row[c];
+			if(materialNames.includes(name)) {
+				materialCounter[name]++;
+			}
+		}
+	}
+
+	let result =  {
+		totalCost: 0,
+		totalWeight: 0,
+		totalAttack: 0,
+		totalDefense: 0,
+	};
+	for(let i = 0; i < materialNames.length; i++) {
+		const name = materialNames[i];
+		const count = materialCounter[name];
+		result.totalCost += count * pricing[name].solid;
+		result.totalWeight += count * sumEffects(EFFECT_TYPES.WEIGHT, name);
+		result.totalAttack += count * sumEffects(EFFECT_TYPES.ATTACK, name);
+		result.totalDefense += count * sumEffects(EFFECT_TYPES.DEFENSE, name);
+	}
+	return result;
+}
 
 function sumEffects(type, material) {
 	let weightEffects = getEffectsByTypeAndMaterial(type, material);

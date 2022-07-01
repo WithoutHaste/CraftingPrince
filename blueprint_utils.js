@@ -214,7 +214,7 @@ function parseBlueprint(blueprint) {
 		}
 		//within the pattern section
 		startedPattern = true;
-		pattern = pattern + '\n' + lines[i];
+		pattern = pattern + '\n' + lines[i].replace('\t',' ');
 	}
 	blueprint.pattern = pattern
 	initializeMetricValues(blueprint);
