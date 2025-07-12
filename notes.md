@@ -125,3 +125,5 @@ items, for inspiration: sword, padded armor, plate mail, umbrella, cloak, boots,
 old notes indicate another overlapping wheel of material types, but let's leave that out for now
 
 we've sort of got four sections - metal, earth, animal, plant
+
+leaving the "transition" materials out of it for now, see if they are needed - their purpose is to increase the expense of changing materials, and to further complicate laying down a path of valid tiles

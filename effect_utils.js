@@ -11,8 +11,8 @@ const EFFECT_TOTALS = {
 	ATTACK: "ATTACK",
 	DEFENSE: "DEFENSE",
 };
-const isWeight = /^(\w+)\: weight ([\+\-])((\d+\.)?\d+)$/;
-const isAttack = /^(\w+)\: attack ([\+\-])((\d+\.)?\d+)$/;
+const isWeight = /^(\w+)\: weight ([\+\-])((\d+\.)?\d+)(.*)$/;
+const isAttack = /^(\w+)\: attack ([\+\-])((\d+\.)?\d+)(.*)$/;
 const isDefense = /^(\w+)\: defense ([\+\-])((\d+\.)?\d+)(.*)$/;
 
 var effects = [];

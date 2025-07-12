@@ -268,7 +268,7 @@ function displayMaterials(container) {
 		let unit = ''; //'$';
 		let cell = document.createElement('td');
 		cell.classList.add('material');
-		cell.innerHTML = `${materialName}<br/>${unit}${pricing[materialName].solid}</br>~${pricing[materialName].transition}`;
+		cell.innerHTML = `${materialName}<br/>${unit}${pricing[materialName].solid}`;
 		cell.dataset.name = materialName;
 		cell.addEventListener('click', selectMaterial);
 		return cell;
